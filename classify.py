@@ -3,7 +3,7 @@ for training new model with pointnet2_ops
 Usage:
 python main_new.py --use_normals --use_uniform_sample --model new1Amax
 or
-nohup python main_new.py --use_normals --use_uniform_sample --model PCTNEW > new_nohup/PCTNEW.out &
+nohup python classify.py --model PCT > new_nohup/PCTNEW.out &
 """
 import argparse
 import os
@@ -20,6 +20,8 @@ from utils import Logger, mkdir_p, progress_bar, save_model, save_args
 from data import ModelNet40
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
+from helper import cal_loss
+import numpy as np
 
 model_names = sorted(name for name in models.__dict__
                      if callable(models.__dict__[name]))
@@ -73,13 +75,7 @@ def main():
     # Model
     print('==> Building model..')
     net = models.__dict__[args.model]()
-
-
-
-
-    criterion = CELoss()
-    if args.model == "PointNet":
-        criterion = PointNetLoss()
+    criterion = cal_loss
     net = net.to(device)
     criterion = criterion.to(device)
     if device == 'cuda':
@@ -97,27 +93,27 @@ def main():
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
     for epoch in range(start_epoch, args.epoch):
         print('Epoch(%d/%s) Learning Rate %s:' % (epoch + 1, args.epoch, optimizer.param_groups[0]['lr']))
-        train_out = train(net, trainDataLoader, optimizer, criterion, device)  # {"loss", "acc", "time"}
-        test_out = validate(net, testDataLoader, criterion, device)
+        train_out = train(net, train_loader, optimizer, criterion, device)  # {"loss", "acc", "time"}
+        # test_out = validate(net, test_loader, criterion, device)
         scheduler.step()
 
-        if test_out["acc"] > best_test_acc:
-            best_test_acc = test_out["acc"]
-            is_best = True
-        else:
-            is_best = False
-
-        best_test_acc = test_out["acc"] if (test_out["acc"] > best_test_acc) else best_test_acc
-        best_train_acc = train_out["acc"] if (train_out["acc"] > best_train_acc) else best_train_acc
-        best_test_loss = test_out["loss"] if (test_out["loss"] < best_test_loss) else best_test_loss
-        best_train_loss = train_out["loss"] if (train_out["loss"] < best_train_loss) else best_train_loss
-
-        save_model(net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best)
-        logger.append([epoch, optimizer.param_groups[0]['lr'],
-                       train_out["loss"], train_out["acc"],
-                       test_out["loss"], test_out["acc"]])
-        print(f"Training loss:{train_out['loss']} acc:{train_out['acc']}% time:{train_out['time']}s) | "
-              f"Testing loss:{test_out['loss']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
+        # if test_out["acc"] > best_test_acc:
+        #     best_test_acc = test_out["acc"]
+        #     is_best = True
+        # else:
+        #     is_best = False
+        #
+        # best_test_acc = test_out["acc"] if (test_out["acc"] > best_test_acc) else best_test_acc
+        # best_train_acc = train_out["acc"] if (train_out["acc"] > best_train_acc) else best_train_acc
+        # best_test_loss = test_out["loss"] if (test_out["loss"] < best_test_loss) else best_test_loss
+        # best_train_loss = train_out["loss"] if (train_out["loss"] < best_train_loss) else best_train_loss
+        #
+        # save_model(net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best)
+        # logger.append([epoch, optimizer.param_groups[0]['lr'],
+        #                train_out["loss"], train_out["acc"],
+        #                test_out["loss"], test_out["acc"]])
+        # print(f"Training loss:{train_out['loss']} acc:{train_out['acc']}% time:{train_out['time']}s) | "
+        #       f"Testing loss:{test_out['loss']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
     logger.close()
 
 
@@ -133,32 +129,38 @@ def train(net, trainloader, optimizer, criterion, device):
     train_loss = 0
     correct = 0
     total = 0
+    train_pred = []
+    train_true = []
     time_cost = datetime.datetime.now()
-    for batch_idx, (points, targets) in enumerate(trainloader):
-        points = points.data.numpy()
-        points = provider.random_point_dropout(points)
-        points[:, :, 0:3] = provider.random_scale_point_cloud(points[:, :, 0:3])
-        points[:, :, 0:3] = provider.shift_point_cloud(points[:, :, 0:3])
-        points = torch.Tensor(points)
-        points = points.transpose(2, 1)
-        points, targets = points.to(device), targets.to(device).long()
+    for batch_idx, (data, label) in enumerate(trainloader):
+        data, label = data.to(device), label.to(device).squeeze()
+        data = data.permute(0, 2, 1)
+        batch_size = data.size()[0]
         optimizer.zero_grad()
-        out = net(points)
-        loss = criterion(out, targets)
+        logits = net(data)
+        loss = criterion(logits, label)
         loss.backward()
         optimizer.step()
         train_loss += loss.item()
-        _, predicted = out["logits"].max(1)
-        total += targets.size(0)
-        correct += predicted.eq(targets).sum().item()
+        preds = logits.max(dim=1)[1]
+
+        train_true.append(label.cpu().numpy())
+        train_pred.append(preds.detach().cpu().numpy())
+
+
+        total += label.size(0)
+        correct += preds.eq(label).sum().item()
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
     time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
+    train_true = np.concatenate(train_true)
+    train_pred = np.concatenate(train_pred)
     return {
         "loss": float("%.3f" % (train_loss / (batch_idx + 1))),
-        "acc": float("%.3f" % (100. * correct / total)),
+        "acc": float("%.3f" % (metrics.accuracy_score(train_true, train_pred))),
+        "acc_avg": float("%.3f" % (metrics.balanced_accuracy_score(train_true, train_pred))),
         "time": time_cost
     }
 
