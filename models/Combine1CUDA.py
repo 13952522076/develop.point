@@ -266,9 +266,7 @@ class Combine1CUDA(nn.Module):
         # now, out shape is [b, sampled points, d]
         out = self.pool(out.transpose(1,2)).squeeze(dim=-1)
         out = self.classify(out)
-        return {
-            "logits": out
-        }
+        return out
 
 
 def combine1ACUDA(num_classes=40, **kwargs: Any) -> Combine1CUDA:
@@ -321,17 +319,17 @@ if __name__ == '__main__':
     pointsformer = combine1ACUDA()
     data = torch.rand(2, 3, 1024)
     out = pointsformer(data)
-    print(out["logits"].shape)
+    print(out.shape)
 
     print("===> testing combin1 ...")
     pointsformer = combine1AmaxCUDA()
     data = torch.rand(2, 3, 1024)
     out = pointsformer(data)
-    print(out["logits"].shape)
+    print(out.shape)
 
     print("===> testing combin1 ...")
     pointsformer = combine1CmaxCUDA()
     data = torch.rand(2, 3, 1024)
     out = pointsformer(data)
-    print(out["logits"].shape)
+    print(out.shape)
 

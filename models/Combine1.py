@@ -262,9 +262,7 @@ class Combine1(nn.Module):
         # now, out shape is [b, sampled points, d]
         out = self.pool(out.transpose(1,2)).squeeze(dim=-1)
         out = self.classify(out)
-        return {
-            "logits": out
-        }
+        return out
 
 
 def combine1A(num_classes=40, **kwargs: Any) -> Combine1:
@@ -317,17 +315,17 @@ if __name__ == '__main__':
     pointsformer = combine1A()
     data = torch.rand(2, 3, 1024)
     out = pointsformer(data)
-    print(out["logits"].shape)
+    print(out.shape)
 
     print("===> testing combin1 ...")
     pointsformer = combine1Amax()
     data = torch.rand(2, 3, 1024)
     out = pointsformer(data)
-    print(out["logits"].shape)
+    print(out.shape)
 
     print("===> testing combin1 ...")
     pointsformer = combine1Cmax()
     data = torch.rand(2, 3, 1024)
     out = pointsformer(data)
-    print(out["logits"].shape)
+    print(out.shape)
 
