@@ -64,7 +64,9 @@ def main():
         mkdir_p(args.checkpoint)
         save_args(args)
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model)
-        logger.set_names(["Epoch-Num", 'Learning-Rate', 'Train-Loss', 'Train-acc', 'Valid-Loss', 'Valid-acc'])
+        logger.set_names(["Epoch-Num", 'Learning-Rate',
+                          'Train-Loss', 'Train-acc-B', 'Train-acc',
+                          'Valid-Loss','Valid-acc-B' 'Valid-acc'])
 
     print('==> Preparing data..')
     train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
@@ -87,40 +89,44 @@ def main():
 
     best_test_acc = 0.  # best test accuracy
     best_train_acc = 0.
+    best_test_acc_avg = 0.
+    best_train_acc_avg = 0.
     best_test_loss = float("inf")
     best_train_loss = float("inf")
 
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
     for epoch in range(start_epoch, args.epoch):
         print('Epoch(%d/%s) Learning Rate %s:' % (epoch + 1, args.epoch, optimizer.param_groups[0]['lr']))
-        train_out = train(net, train_loader, optimizer, criterion, device)  # {"loss", "acc", "time"}
-        print(train_out)
-        # test_out = validate(net, test_loader, criterion, device)
+        train_out = train(net, train_loader, optimizer, criterion, device)  # {"loss", "acc", "acc_avg", "time"}
+        test_out = validate(net, test_loader, criterion, device)
         scheduler.step()
 
-        # if test_out["acc"] > best_test_acc:
-        #     best_test_acc = test_out["acc"]
-        #     is_best = True
-        # else:
-        #     is_best = False
-        #
-        # best_test_acc = test_out["acc"] if (test_out["acc"] > best_test_acc) else best_test_acc
-        # best_train_acc = train_out["acc"] if (train_out["acc"] > best_train_acc) else best_train_acc
-        # best_test_loss = test_out["loss"] if (test_out["loss"] < best_test_loss) else best_test_loss
-        # best_train_loss = train_out["loss"] if (train_out["loss"] < best_train_loss) else best_train_loss
-        #
-        # save_model(net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best)
-        # logger.append([epoch, optimizer.param_groups[0]['lr'],
-        #                train_out["loss"], train_out["acc"],
-        #                test_out["loss"], test_out["acc"]])
-        # print(f"Training loss:{train_out['loss']} acc:{train_out['acc']}% time:{train_out['time']}s) | "
-        #       f"Testing loss:{test_out['loss']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
+        if test_out["acc"] > best_test_acc:
+            best_test_acc = test_out["acc"]
+            is_best = True
+        else:
+            is_best = False
+
+        best_test_acc = test_out["acc"] if (test_out["acc"] > best_test_acc) else best_test_acc
+        best_train_acc = train_out["acc"] if (train_out["acc"] > best_train_acc) else best_train_acc
+        best_test_acc_avg = test_out["acc_avg"] if (test_out["acc_avg"] > best_test_acc_avg) else best_test_acc_avg
+        best_train_acc_avg = train_out["acc_avg"] if (train_out["acc_avg"] > best_train_acc_avg) else best_train_acc_avg
+        best_test_loss = test_out["loss"] if (test_out["loss"] < best_test_loss) else best_test_loss
+        best_train_loss = train_out["loss"] if (train_out["loss"] < best_train_loss) else best_train_loss
+
+        save_model(net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best)
+        logger.append([epoch, optimizer.param_groups[0]['lr'],
+                       train_out["loss"], train_out["acc_avg"],train_out["acc"],
+                       test_out["loss"], test_out["acc_avg"], test_out["acc"]])
+        print(f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']} acc:{train_out['acc']} time:{train_out['time']}s)")
+        print(f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
     logger.close()
 
 
     print(f"++++++++" * 2 + "Final results" + "++++++++" * 2)
     print(f"++  Last Train time: {train_out['time']} | Last Test time: {test_out['time']}  ++")
     print(f"++  Best Train loss: {best_train_loss} | Best Test loss: {best_test_loss}  ++")
+    print(f"++  Best Train acc_B: {best_train_acc_avg} | Best Test acc_B: {best_test_acc_avg}  ++")
     print(f"++  Best Train acc: {best_train_acc} | Best Test acc: {best_test_acc}  ++")
     print(f"++++++++" * 5)
 
@@ -136,7 +142,6 @@ def train(net, trainloader, optimizer, criterion, device):
     for batch_idx, (data, label) in enumerate(trainloader):
         data, label = data.to(device), label.to(device).squeeze()
         data = data.permute(0, 2, 1)
-        batch_size = data.size()[0]
         optimizer.zero_grad()
         logits = net(data)
         loss = criterion(logits, label)
@@ -160,8 +165,8 @@ def train(net, trainloader, optimizer, criterion, device):
     train_pred = np.concatenate(train_pred)
     return {
         "loss": float("%.3f" % (train_loss / (batch_idx + 1))),
-        "acc": float("%.3f" % (metrics.accuracy_score(train_true, train_pred))),
-        "acc_avg": float("%.3f" % (metrics.balanced_accuracy_score(train_true, train_pred))),
+        "acc": float("%.3f" % (100.*metrics.accuracy_score(train_true, train_pred))),
+        "acc_avg": float("%.3f" % (100.*metrics.balanced_accuracy_score(train_true, train_pred))),
         "time": time_cost
     }
 
@@ -171,27 +176,31 @@ def validate(net, testloader, criterion, device):
     test_loss = 0
     correct = 0
     total = 0
+    test_true = []
+    test_pred = []
     time_cost = datetime.datetime.now()
     with torch.no_grad():
-        for batch_idx, (points, targets) in enumerate(testloader):
-            points = points.data.numpy()
-            points = torch.Tensor(points)
-            points = points.transpose(2, 1)
-            points, targets = points.to(device), targets.to(device).long()
-            out = net(points)
-            loss = criterion(out, targets)
+        for batch_idx, (data, label) in enumerate(testloader):
+            data, label = data.to(device), label.to(device).squeeze()
+            data = data.permute(0, 2, 1)
+            logits = net(data)
+            loss = criterion(logits, label)
             test_loss += loss.item()
-            _, predicted = out["logits"].max(1)
-            total += targets.size(0)
-            correct += predicted.eq(targets).sum().item()
-
+            preds = logits.max(dim=1)[1]
+            test_true.append(label.cpu().numpy())
+            test_pred.append(preds.detach().cpu().numpy())
+            total += label.size(0)
+            correct += preds.eq(label).sum().item()
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                          % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
     time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
+    test_true = np.concatenate(test_true)
+    test_pred = np.concatenate(test_pred)
     return {
         "loss": float("%.3f" % (test_loss / (batch_idx + 1))),
-        "acc": float("%.3f" % (100. * correct / total)),
+        "acc": float("%.3f" % (100. * metrics.accuracy_score(test_true, test_pred))),
+        "acc_avg": float("%.3f" % (100. * metrics.balanced_accuracy_score(test_true, test_pred))),
         "time": time_cost
     }
 
