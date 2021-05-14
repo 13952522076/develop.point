@@ -66,7 +66,7 @@ def main():
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model)
         logger.set_names(["Epoch-Num", 'Learning-Rate',
                           'Train-Loss', 'Train-acc-B', 'Train-acc',
-                          'Valid-Loss','Valid-acc-B' 'Valid-acc'])
+                          'Valid-Loss', 'Valid-acc-B', 'Valid-acc'])
 
     print('==> Preparing data..')
     train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
@@ -116,12 +116,13 @@ def main():
 
         save_model(net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best)
         logger.append([epoch, optimizer.param_groups[0]['lr'],
-                       train_out["loss"], train_out["acc_avg"],train_out["acc"],
+                       train_out["loss"], train_out["acc_avg"], train_out["acc"],
                        test_out["loss"], test_out["acc_avg"], test_out["acc"]])
-        print(f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']} acc:{train_out['acc']} time:{train_out['time']}s)")
-        print(f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
+        print(
+            f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']} acc:{train_out['acc']} time:{train_out['time']}s)")
+        print(
+            f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
     logger.close()
-
 
     print(f"++++++++" * 2 + "Final results" + "++++++++" * 2)
     print(f"++  Last Train time: {train_out['time']} | Last Test time: {test_out['time']}  ++")
@@ -153,7 +154,6 @@ def train(net, trainloader, optimizer, criterion, device):
         train_true.append(label.cpu().numpy())
         train_pred.append(preds.detach().cpu().numpy())
 
-
         total += label.size(0)
         correct += preds.eq(label).sum().item()
 
@@ -165,8 +165,8 @@ def train(net, trainloader, optimizer, criterion, device):
     train_pred = np.concatenate(train_pred)
     return {
         "loss": float("%.3f" % (train_loss / (batch_idx + 1))),
-        "acc": float("%.3f" % (100.*metrics.accuracy_score(train_true, train_pred))),
-        "acc_avg": float("%.3f" % (100.*metrics.balanced_accuracy_score(train_true, train_pred))),
+        "acc": float("%.3f" % (100. * metrics.accuracy_score(train_true, train_pred))),
+        "acc_avg": float("%.3f" % (100. * metrics.balanced_accuracy_score(train_true, train_pred))),
         "time": time_cost
     }
 
