@@ -94,6 +94,7 @@ def main():
     for epoch in range(start_epoch, args.epoch):
         print('Epoch(%d/%s) Learning Rate %s:' % (epoch + 1, args.epoch, optimizer.param_groups[0]['lr']))
         train_out = train(net, train_loader, optimizer, criterion, device)  # {"loss", "acc", "time"}
+        print(train_out)
         # test_out = validate(net, test_loader, criterion, device)
         scheduler.step()
 
