@@ -142,7 +142,7 @@ def train(net, trainloader, optimizer, criterion, device):
     time_cost = datetime.datetime.now()
     for batch_idx, (data, label) in enumerate(trainloader):
         data, label = data.to(device), label.to(device).squeeze()
-        data = data.permute(0, 2, 1)
+        data = data.permute(0, 2, 1)  # so, the input data shape is [batch, 3, 1024]
         optimizer.zero_grad()
         logits = net(data)
         loss = criterion(logits, label)
@@ -160,7 +160,6 @@ def train(net, trainloader, optimizer, criterion, device):
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
-    print(f"\nInput data shape: {data.shape}\n")
     time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
     train_true = np.concatenate(train_true)
     train_pred = np.concatenate(train_pred)
