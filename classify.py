@@ -160,6 +160,7 @@ def train(net, trainloader, optimizer, criterion, device):
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
+    print(f"\nInput data shape: {data.shape}\n")
     time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
     train_true = np.concatenate(train_true)
     train_pred = np.concatenate(train_pred)
