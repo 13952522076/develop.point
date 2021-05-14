@@ -77,7 +77,7 @@ def main():
     net = models.__dict__[args.model]()
     criterion = cal_loss
     net = net.to(device)
-    criterion = criterion.to(device)
+    # criterion = criterion.to(device)
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
         cudnn.benchmark = True
