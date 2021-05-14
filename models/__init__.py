@@ -7,3 +7,4 @@ from .Combine1 import combine1Cmax
 from .Combine1CUDA import combine1AmaxCUDA
 from .Combine1CUDA import combine1CmaxCUDA
 
+from .pct2 import PCT2
