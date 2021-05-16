@@ -215,7 +215,7 @@ class LocalGather(nn.Module):
         fea = torch.cat([fea, off_set], dim=-1)
         fea = fea.permute(0,3,1,2)
         fea = self.fcn(fea)
-        fea = (fea.max(dim=-1)[1]).permute(0,2,1)
+        fea = (fea.max(dim=-1)[0]).permute(0,2,1)
         return torch.cat([xyz,fea],dim=-1)
 
 
