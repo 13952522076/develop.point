@@ -201,7 +201,7 @@ class LocalGather(nn.Module):
         """
         super(LocalGather, self).__init__()
         self.fcn = nn.Sequential(
-            nn.Conv2d(2*in_channel, in_channel, 1),
+            nn.Conv2d(in_channel, in_channel, 1),
             nn.BatchNorm2d(in_channel),
             nn.ReLU(inplace=True),
             nn.Conv2d(in_channel, out_channel, 1),
@@ -211,8 +211,8 @@ class LocalGather(nn.Module):
     def forward(self, x):  # x [b,p,k,3+c], p: selected points, k is nerighbor number
         xyz = (x[:,:,0,:3]).contiguous()
         fea = (x[:,:,:,3:]).contiguous()
-        off_set = fea - (fea[:,:,0,:]).unsqueeze(dim=-2)
-        fea = torch.cat([fea, off_set], dim=-1)
+        # off_set = fea - (fea[:,:,0,:]).unsqueeze(dim=-2)
+        # fea = torch.cat([fea, off_set], dim=-1)
         fea = fea.permute(0,3,1,2)
         fea = self.fcn(fea)
         fea = (fea.max(dim=-1)[1]).permute(0,2,1)
