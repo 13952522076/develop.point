@@ -170,7 +170,7 @@ class TransformerDown(nn.Module):
         super(TransformerDown, self).__init__()
         self.m = nn.Linear(in_dim, out_dim)
 
-    def forward(self, x):
+    def forward(self, x):  # x [b,n,k,d]
         x = x[:, :, 0, :]
         out = self.m(x)
         out = F.relu(out, inplace=True)
@@ -259,9 +259,9 @@ class Combine1CUDA3(nn.Module):
             out = self.transformer_stages[i](out)
             coords, features = out[:, :, :, :3], out[:, :, :, 3:]
             # print(f"features.shape: {features.shape}")
-            sampled_points = (features[:, :, 0, :]).unsqueeze(dim=-2)
+
             coords = coords[:, :, 0, :]
-            out = self.transformer_downs[i](sampled_points)
+            out = self.transformer_downs[i](features)
 
         # now, out shape is [b, sampled points, d]
         out = self.pool(out.transpose(1,2)).squeeze(dim=-1)
