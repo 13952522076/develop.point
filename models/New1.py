@@ -322,6 +322,10 @@ def new1C(num_classes=40, **kwargs: Any) -> New1:
 def new1D(num_classes=40, **kwargs: Any) -> New1:
     return New1(num_classes=num_classes, blocks=[2, 3, 6, 4], reducer=4, k_neighbors=[32,32,32,32], **kwargs)
 
+def new1E(num_classes=40, **kwargs: Any) -> New1:
+    return New1(num_classes=num_classes, embed_channel=64, blocks=[1,1,1,1], reducer=4, k_neighbors=[32,32,32,32], **kwargs)
+
+
 if __name__ == '__main__':
     print("===> testing localgather...")
     channel=16
@@ -347,6 +351,10 @@ if __name__ == '__main__':
 
     print("===> testing new1D ...")
     pointsformer = new1D()
+    out = pointsformer(data)
+    print(out.shape)
+
+    pointsformer = new1E()
     out = pointsformer(data)
     print(out.shape)
 
