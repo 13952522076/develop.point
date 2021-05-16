@@ -171,7 +171,8 @@ class TransformerDown(nn.Module):
         self.m = nn.Linear(in_dim, out_dim)
 
     def forward(self, x):  # x [b,n,k,d]
-        x = x.max(dim=-2,keepdim=False)[0]  # x [b,n,d]
+        # x = x.max(dim=-2,keepdim=False)[0]  # x [b,n,d]
+        x = x[:,:,0,:]
         out = self.m(x)
         out = F.relu(out, inplace=True)
         return out
