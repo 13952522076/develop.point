@@ -74,21 +74,6 @@ def farthest_point_sample(xyz, npoint):
     return centroids
 
 
-class FeedForward(nn.Module):
-    def __init__(self, dim, hidden_dim):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(dim, hidden_dim),
-            nn.ReLU(),
-            # nn.Dropout(dropout),
-            nn.Linear(hidden_dim, dim),
-            # nn.Dropout(dropout)
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
-
 class Attention(nn.Module):
     def __init__(self, dim, heads=8, dim_head=64):
         """
@@ -178,18 +163,6 @@ class TransformerBlock(nn.Module):
         return out
 
 
-class TransformerDown(nn.Module):
-    def __init__(self, in_dim, out_dim, hid_dim=0, **kwargs):
-        super(TransformerDown, self).__init__()
-        self.m = nn.Linear(in_dim, out_dim)
-
-    def forward(self, x):
-        x = x[:, :, 0, :]
-        out = self.m(x)
-        out = F.relu(out, inplace=True)
-        return out
-
-
 class FPSKNNGrouper(nn.Module):
     def __init__(self, points, knn=16, **kwargs):
         """
@@ -216,6 +189,7 @@ class FPSKNNGrouper(nn.Module):
         knn_idx = distances.argsort()[:, :, :self.knn]
         grouped_points = index_points(x, knn_idx)  # [b,points, knn, 3+c]
         return grouped_points
+
 
 class LocalGather(nn.Module):
     def __init__(self, in_channel, out_channel, **kwargs):

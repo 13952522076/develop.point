@@ -3,7 +3,7 @@ for training new model with pointnet2_ops
 Usage:
 python main_new.py --use_normals --use_uniform_sample --model new1Amax
 or
-nohup python classify.py --model PCT > new_nohup/PCTNEW.out &
+nohup python classify.py --model new1A > new_nohup/PCTNEW.out &
 """
 import argparse
 import os
