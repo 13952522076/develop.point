@@ -13,3 +13,6 @@ from .Combine1CUDA2 import combine1AmaxCUDA2
 
 from .pct2 import PCT2
 from .pct3 import PCT3
+
+
+from .New1 import new1A, new1B, new1C, new1D
