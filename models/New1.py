@@ -209,14 +209,16 @@ class LocalGather(nn.Module):
             nn.ReLU(inplace=True)
         )
     def forward(self, x):  # x [b,p,k,3+c], p: selected points, k is nerighbor number
-        xyz = (x[:,:,0,:3]).contiguous()
-        fea = (x[:,:,:,3:]).contiguous()
-        # off_set = fea - (fea[:,:,0,:]).unsqueeze(dim=-2)
-        # fea = torch.cat([fea, off_set], dim=-1)
-        fea = fea.permute(0,3,1,2)
-        fea = self.fcn(fea)
-        fea = (fea.max(dim=-1)[1]).permute(0,2,1)
-        return torch.cat([xyz,fea],dim=-1)
+        # xyz = (x[:,:,0,:3]).contiguous()
+        # fea = (x[:,:,:,3:]).contiguous()
+        # # off_set = fea - (fea[:,:,0,:]).unsqueeze(dim=-2)
+        # # fea = torch.cat([fea, off_set], dim=-1)
+        # fea = fea.permute(0,3,1,2)
+        # fea = self.fcn(fea)
+        # fea = (fea.max(dim=-1)[1]).permute(0,2,1)
+        # return torch.cat([xyz,fea],dim=-1)
+
+        return x[:,:,0,:]
 
 
 class New1(nn.Module):
