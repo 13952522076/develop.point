@@ -326,6 +326,10 @@ def new1E(num_classes=40, **kwargs: Any) -> New1:
     return New1(num_classes=num_classes, embed_channel=64, blocks=[1,1,1,1], reducer=4, k_neighbors=[32,32,32,32], **kwargs)
 
 
+def new1F(num_classes=40, **kwargs: Any) -> New1:
+    return New1(num_classes=num_classes, embed_channel=32, blocks=[1,1,1], reducer=4, k_neighbors=[32,32,32], **kwargs)
+
+
 if __name__ == '__main__':
     print("===> testing localgather...")
     channel=16
