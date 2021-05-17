@@ -21,3 +21,4 @@ from .New2 import new2A
 from .New3 import new3A
 from .New4 import new4A, new4B, new4D
 from .New5 import new5A
+from .New6 import new6A
