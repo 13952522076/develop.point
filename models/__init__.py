@@ -20,3 +20,4 @@ from .Combine1CUDA3 import combine1AmaxCUDA3
 from .New2 import new2A
 from .New3 import new3A
 from .New4 import new4A
+from .New5 import new5A
