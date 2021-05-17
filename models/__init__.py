@@ -19,5 +19,5 @@ from .New1 import new1A, new1B, new1C, new1D, new1E
 from .Combine1CUDA3 import combine1AmaxCUDA3
 from .New2 import new2A
 from .New3 import new3A
-from .New4 import new4A
+from .New4 import new4A, new4B, new4D
 from .New5 import new5A
