@@ -32,7 +32,7 @@ class PCT4(nn.Module):
         self.gather_local_0 = Local_op(in_channels=128, out_channels=128)
         self.gather_local_1 = Local_op(in_channels=256, out_channels=256)
 
-        self.pt_last = Point_Transformer_Last()
+        # self.pt_last = Point_Transformer_Last()
 
         self.conv_fuse = nn.Sequential(nn.Conv1d(256, 512, kernel_size=1, bias=False),
                                     nn.BatchNorm1d(512),
