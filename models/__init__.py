@@ -26,3 +26,4 @@ from .New6 import new6A
 
 
 from .local import modelA, modelB, modelC, modelD, modelE
+from .model2 import model2A, model2B, model2C, model2D, model2E
