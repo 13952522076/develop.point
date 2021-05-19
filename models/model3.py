@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch import einsum
 from einops import rearrange, repeat
 import torch.nn.functional as F
-from _utils import square_distance, index_points, farthest_point_sample, query_ball_point, knn_point
+from ._utils import square_distance, index_points, farthest_point_sample, query_ball_point, knn_point
 from pointnet2_ops import pointnet2_utils
 
 
