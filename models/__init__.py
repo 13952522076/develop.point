@@ -25,5 +25,5 @@ from .New5 import new5A
 from .New6 import new6A
 
 
-from .local import modelA, modelB, modelC, modelD, modelE
+from .local import modelA, modelB, modelC, modelD, modelE, modelF
 from .model2 import model2A, model2B, model2C, model2D, model2E
