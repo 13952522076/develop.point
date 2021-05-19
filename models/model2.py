@@ -300,6 +300,11 @@ def model2E(num_classes=40, **kwargs) -> Model2:
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[2,2,2], **kwargs)
 
+def model2F(num_classes=40, **kwargs) -> Model2:
+    return Model2(points=1024, class_num=num_classes, embed_dim=64,
+                 pre_blocks=[3,3], pos_blocks=[2,2], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
 if __name__ == '__main__':
     batch, groups,neighbors,dim=2,512,32,16
     x = torch.rand(batch,groups,neighbors,dim)
