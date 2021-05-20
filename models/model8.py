@@ -383,7 +383,7 @@ def model8G(num_classes=40, **kwargs) -> Model8:
 
 def model8H(num_classes=40, **kwargs) -> Model8:
     return Model8(points=1024, class_num=num_classes, embed_dim=64,
-                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[16,16,16],
+                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[16,16],
                  reducers=[4,4], **kwargs)
 
 if __name__ == '__main__':
