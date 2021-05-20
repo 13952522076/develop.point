@@ -12,7 +12,7 @@ from torch import einsum
 from einops import rearrange, repeat
 import torch.nn.functional as F
 # from ._utils import square_distance, index_points, farthest_point_sample, query_ball_point, knn_point
-# from pointnet2_ops import pointnet2_utils
+from pointnet2_ops import pointnet2_utils
 
 def square_distance(src, dst):
     """
@@ -133,8 +133,8 @@ class LocalGrouper(nn.Module):
         S = self.groups
         xyz = xyz.contiguous()  # xyz [btach, points, xyz]
 
-        fps_idx = farthest_point_sample(xyz, self.groups).long()
-        # fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
+        # fps_idx = farthest_point_sample(xyz, self.groups).long()
+        fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
         new_xyz = index_points(xyz, fps_idx)
         new_points = index_points(points, fps_idx)
 
