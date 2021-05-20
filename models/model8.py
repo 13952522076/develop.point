@@ -371,16 +371,6 @@ def model8E(num_classes=40, **kwargs) -> Model8:
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[2,2,2], **kwargs)
 
-def model8E(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=32,
-                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
-                 reducers=[4,2,2], **kwargs)
-
-def model8E(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=32,
-                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
-                 reducers=[2,2,2], **kwargs)
-
 def model8F(num_classes=40, **kwargs) -> Model8:
     return Model8(points=1024, class_num=num_classes, embed_dim=32,
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
