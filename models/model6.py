@@ -1,4 +1,5 @@
 """
+Based on model5, add class token for each stage, both local and global.
 Totally the Transformer structure.
 Changed for simple attention.
 The extraction is doubled for depth.
@@ -366,6 +367,8 @@ class Model6(nn.Module):
             local_token = (self.local_token_list[i]).expand([b,g,1,d])
             x = torch.cat([x, local_token],dim=2)
             x = self.pre_blocks_list[i](x)  #[b, g, k, d] -> [b, g, d]
+            global_token = (self.global_token_list[i]).expand([b,1,2*d])
+            x = torch.cat([x, global_token],dim=1)
             x = self.pos_blocks_list[i](x)  #[b,p,d] -> [b,p,d]
 
         x = x.permute(0, 2, 1)  #[b,d,p]
@@ -402,6 +405,11 @@ def model6E(num_classes=40, **kwargs) -> Model6:
 def model6F(num_classes=40, **kwargs) -> Model6:
     return Model6(points=1024, class_num=num_classes, embed_dim=64, heads=4, dim_head=32,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[24,24,24],
+                 reducers=[2,2,2], **kwargs)
+
+def model6G(num_classes=40, **kwargs) -> Model6:
+    return Model6(points=1024, class_num=num_classes, embed_dim=64, heads=4, dim_head=32,
+                 pre_blocks=[3,3,3], pos_blocks=[1,1,1], k_neighbors=[32,16,8],
                  reducers=[2,2,2], **kwargs)
 
 
@@ -448,6 +456,11 @@ if __name__ == '__main__':
 
     print("===> testing model6D ...")
     model = model6D()
+    out = model(data)
+    print(out.shape)
+
+    print("===> testing model6G ...")
+    model = model6G()
     out = model(data)
     print(out.shape)
 
