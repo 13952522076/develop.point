@@ -31,3 +31,4 @@ from .model3 import model3A, model3B, model3C, model3D, model3E, model3F, model3
 from .model4 import model4A
 from .model5 import model5A, model5B, model5C, model5D, model5E, model5F
 from .model6 import model6F, model6G
+from .model7 import model7H
