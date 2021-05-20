@@ -318,7 +318,7 @@ def add_flops_mask_variable_or_reset(module):
 if __name__ == '__main__':
     # import models as models
     # model = models.__dict__['new1A'](num_classes=40)
-    from model4 import model4A as net
+    from model5 import model5A as net
 
 
     model = net()
