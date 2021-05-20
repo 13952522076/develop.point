@@ -170,8 +170,7 @@ class FCBNReLU1DRes(nn.Module):
         )
 
     def forward(self, x):
-        identity = x
-        return F.relu(self.net(x)+identity, inplace=True)
+        return F.relu(self.net(x)+x, inplace=True)
 
 class Attention(nn.Module):
     def __init__(self, dim, heads = 8, dim_head = 32, dropout = 0.):
