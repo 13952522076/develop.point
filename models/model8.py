@@ -346,12 +346,55 @@ class Model8(nn.Module):
         return x
 
 
-def model8E(num_classes=40, **kwargs) -> Model8:
+def model8A(num_classes=40, **kwargs) -> Model8:
     return Model8(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[2,2,2], **kwargs)
 
+def model8B(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+                 pre_blocks=[3,3,3], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
+                 reducers=[2,2,2], **kwargs)
 
+def model8C(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
+                 reducers=[4,2,2], **kwargs)
+
+def model8D(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
+                 reducers=[2,2,2], **kwargs)
+
+def model8E(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
+                 reducers=[2,2,2], **kwargs)
+
+def model8E(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
+                 reducers=[4,2,2], **kwargs)
+
+def model8E(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
+                 reducers=[2,2,2], **kwargs)
+
+def model8F(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
+                 reducers=[4,2,2], **kwargs)
+
+def model8G(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
+                 reducers=[4,2,2], **kwargs)
+
+def model8H(num_classes=40, **kwargs) -> Model8:
+    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+                 pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[16,16,16],
+                 reducers=[4,2,2], **kwargs)
 
 if __name__ == '__main__':
     data = torch.rand(2,128,10)
