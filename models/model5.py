@@ -385,6 +385,11 @@ def model5D(num_classes=40, **kwargs) -> Model5:
                  pre_blocks=[3,3,3], pos_blocks=[1,1,1], k_neighbors=[32,32,32],
                  reducers=[2,2,2], **kwargs)
 
+def model5E(num_classes=40, **kwargs) -> Model5:
+    return Model5(points=1024, class_num=num_classes, embed_dim=64, heads=4, dim_head=32,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,16,16],
+                 reducers=[4,2,2], **kwargs)
+
 
 if __name__ == '__main__':
     feature = torch.rand(1, 10, 4)
