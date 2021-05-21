@@ -386,6 +386,12 @@ def model12D_64(num_classes=40, **kwargs) -> Model12:
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
 
+def model12E_64(num_classes=40, **kwargs) -> Model12:
+    return Model12(points=1024, class_num=num_classes, embed_dim=64,
+                 pre_blocks=[3,4,6,3], pos_blocks=[3,4,6,3], k_neighbors=[16,16,16],
+                 heads=8, dim_head=16, reducers=[2,2,2], **kwargs)
+
+
 
 if __name__ == '__main__':
 
