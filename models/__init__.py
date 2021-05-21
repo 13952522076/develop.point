@@ -35,3 +35,4 @@ from .model7 import model7H
 from .model8 import model8A, model8B, model8C, model8D, model8E, model8F, model8G, model8H
 from .model9 import model9A, model9B, model9C, model9D, model9E
 from .model10 import model10A, model10B, model10C, model10D, model10E, model10F, model10G, model10H
+from .model11 import model11A, model11B, model11C, model11D, model11E, model11F, model11G
