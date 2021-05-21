@@ -36,4 +36,4 @@ from .model8 import model8A, model8B, model8C, model8D, model8E, model8F, model8
 from .model9 import model9A, model9B, model9C, model9D, model9E
 from .model10 import model10A, model10B, model10C, model10D, model10E, model10F, model10G, model10H
 from .model11 import model11A, model11B, model11C, model11D, model11E, model11F, model11G
-from .model12 import model12A, model12B, model12C, model12D, model12E, model12F, model12G, model12H
+from .model12 import model12A_64, model12A_128, model12B_64, model12B_128, model12C_64, model12C_128, model12D_64, model12D_128

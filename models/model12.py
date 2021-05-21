@@ -318,64 +318,70 @@ class Model12(nn.Module):
 
 
         self.classifier = nn.Sequential(
-            nn.Linear(embed_dim, embed_dim),
-            nn.BatchNorm1d(embed_dim),
+            nn.Linear(embed_dim*self.stages, 256),
+            nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Linear(embed_dim, self.class_num)
+            nn.Linear(256, self.class_num)
         )
 
     def forward(self, x):
         xyz = x.permute(0, 2, 1)
         batch_size, _, _ = x.size()
         x = self.embedding(x) # B,D,N
+        stage_out = []
         for i in range(self.stages):
             xyz, x = self.local_grouper_list[i](xyz, x.permute(0, 2, 1))   # [b,g,3]  [b,g,k,d]
             x = self.pre_blocks_list[i](x)  # [b,d,g]
             x = self.pos_blocks_list[i](x)  # [b,d,g]
-
-        x = F.adaptive_max_pool1d(x,1).squeeze(dim=-1)
-        x = self.classifier(x)
+            # print(f"Stage-{i} shape: {x.shape}")
+            stage_out.append(F.adaptive_max_pool1d(x,1).squeeze(dim=-1))
+        out = torch.cat(stage_out, dim=-1)
+        x = self.classifier(out)
         return x
 
 
 
-def model12A(num_classes=40, **kwargs) -> Model12:
+def model12A_128(num_classes=40, **kwargs) -> Model12:
     return Model12(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
-def model12B(num_classes=40, **kwargs) -> Model12:
+def model12B_128(num_classes=40, **kwargs) -> Model12:
     return Model12(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  heads=4, dim_head=32, reducers=[4,2,2], **kwargs)
 
-def model12C(num_classes=40, **kwargs) -> Model12:
+def model12C_128(num_classes=40, **kwargs) -> Model12:
     return Model12(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
-def model12D(num_classes=40, **kwargs) -> Model12:
+def model12D_128(num_classes=40, **kwargs) -> Model12:
     return Model12(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,16,16],
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
-def model12E(num_classes=40, **kwargs) -> Model12:
-    return Model12(points=1024, class_num=num_classes, embed_dim=256,
+
+def model12A_64(num_classes=40, **kwargs) -> Model12:
+    return Model12(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
-def model12F(num_classes=40, **kwargs) -> Model12:
-    return Model12(points=1024, class_num=num_classes, embed_dim=256,
+
+def model12B_64(num_classes=40, **kwargs) -> Model12:
+    return Model12(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  heads=4, dim_head=32, reducers=[4,2,2], **kwargs)
 
-def model12G(num_classes=40, **kwargs) -> Model12:
-    return Model12(points=1024, class_num=num_classes, embed_dim=256,
+
+def model12C_64(num_classes=40, **kwargs) -> Model12:
+    return Model12(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
-def model12H(num_classes=40, **kwargs) -> Model12:
-    return Model12(points=1024, class_num=num_classes, embed_dim=256,
+
+def model12D_64(num_classes=40, **kwargs) -> Model12:
+    return Model12(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,16,16],
                  heads=4, dim_head=32, reducers=[2,2,2], **kwargs)
 
@@ -413,8 +419,4 @@ if __name__ == '__main__':
     out = model(data)
     print(out.shape)
 
-    for net in [model12A(), model12B(), model12C(), model12D(),
-                model12E(), model12F(), model12G(), model12H()]:
-        print(f"===> testing {net.__class__.__name__}")
-        out = net(data)
-        print(out.shape)
+
