@@ -38,3 +38,4 @@ from .model10 import model10A, model10B, model10C, model10D, model10E, model10F,
 from .model11 import model11A, model11B, model11C, model11D, model11E, model11F, model11G
 from .model12 import model12A_64, model12A_128, model12B_64, model12B_128, model12C_64, model12C_128, \
                      model12D_64, model12D_128, model12E_64
+from .model13 import model13A
