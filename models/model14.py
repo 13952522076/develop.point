@@ -348,25 +348,25 @@ class Model14(nn.Module):
         return x
 
 
-
-def model14A(num_classes=40, **kwargs) -> Model14:
+def model14A(num_classes=40, **kwargs) -> Model14:  # 20695MiB
     return Model14(points=1024, class_num=num_classes, embed_dim=64,
                   pre_blocks=[2, 2, 2], pos_blocks=[2, 2, 2], k_neighbors=[32, 32, 32],
                   reducers=[2, 2, 2], **kwargs)
 
-def model14B(num_classes=40, **kwargs) -> Model14:
+
+def model14B(num_classes=40, **kwargs) -> Model14:  # 10817MiB
     return Model14(points=1024, class_num=num_classes, embed_dim=64,
                   pre_blocks=[2, 2, 2], pos_blocks=[2, 2, 2], k_neighbors=[32, 32, 32],
                   reducers=[4, 2, 2], **kwargs)
 
 
-def model14C(num_classes=40, **kwargs) -> Model14:
+def model14C(num_classes=40, **kwargs) -> Model14:  # 25261MiB
     return Model14(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[4,4,4], pos_blocks=[4,4,4], k_neighbors=[32,32,32],
                  reducers=[2,2,2], **kwargs)
 
 
-def model14D(num_classes=40, **kwargs) -> Model14:
+def model14D(num_classes=40, **kwargs) -> Model14:  # 32305MiB
     return Model14(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[48,48,48],
                  reducers=[2,2,2], **kwargs)
@@ -374,51 +374,51 @@ def model14D(num_classes=40, **kwargs) -> Model14:
 
 def model14E(num_classes=40, **kwargs) -> Model14:
     return Model14(points=1024, class_num=num_classes, embed_dim=64,
-                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[48,48,48],
-                 reducers=[2,2,2], **kwargs)
+                 pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[48,48],
+                 reducers=[2,2], **kwargs)
 
 
 
 
-def model14Lite_A(num_classes=40, **kwargs) -> Model14:
+def model14Lite_A(num_classes=40, **kwargs) -> Model14:  # 7335MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model14Lite_B(num_classes=40, **kwargs) -> Model14:
+def model14Lite_B(num_classes=40, **kwargs) -> Model14:  # 6003MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=32,
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
 
-def model14Lite_C(num_classes=40, **kwargs) -> Model14:
+def model14Lite_C(num_classes=40, **kwargs) -> Model14:  # 7875MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[3,3], pos_blocks=[3,3], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model14Lite_D(num_classes=40, **kwargs) -> Model14:
+def model14Lite_D(num_classes=40, **kwargs) -> Model14:  # 9767MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[3,3,3], pos_blocks=[3,3,3], k_neighbors=[32,32,16],
                  reducers=[4,4,2], **kwargs)
 
-def model14Lite_E(num_classes=40, **kwargs) -> Model14:
+def model14Lite_E(num_classes=40, **kwargs) -> Model14:  # 6537MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=32,
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model14Lite_F(num_classes=40, **kwargs) -> Model14:
+def model14Lite_F(num_classes=40, **kwargs) -> Model14:  # 4969MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=32,
                  pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,16,8],
                  reducers=[4,4,4], **kwargs)
 
 
-def model14Lite_G(num_classes=40, **kwargs) -> Model14:
+def model14Lite_G(num_classes=40, **kwargs) -> Model14:  # 7831MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=48,
                  pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,16,8],
                  reducers=[4,4,4], **kwargs)
 
 
-def model14Lite_H(num_classes=40, **kwargs) -> Model14:
+def model14Lite_H(num_classes=40, **kwargs) -> Model14:  # 5745MiB
     return Model14(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,16,16],
                  reducers=[8,2,2], **kwargs)
