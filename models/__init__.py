@@ -41,3 +41,6 @@ from .model12 import model12A_64, model12A_128, model12B_64, model12B_128, model
 from .model13 import model13A
 from .model14 import model14A, model14B, model14C, model14D, model14E, model14Lite_A, model14Lite_B,\
                      model14Lite_C, model14Lite_D, model14Lite_E, model14Lite_F, model14Lite_G, model14Lite_H
+
+from .model15 import model15A, model15B, model15C, model15D, model15E, model15Lite_A, model15Lite_B,\
+                     model15Lite_C, model15Lite_D, model15Lite_E, model15Lite_F, model15Lite_G, model15Lite_H
