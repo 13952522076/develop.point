@@ -332,7 +332,7 @@ class Model15(nn.Module):
             nn.Linear(last_channel, min(256,last_channel)),
             nn.BatchNorm1d(min(256,last_channel)),
             nn.ReLU(),
-            nn.Linear(last_channel//4, self.class_num)
+            nn.Linear(min(256,last_channel), self.class_num)
         )
 
     def forward(self, x):
