@@ -329,8 +329,8 @@ class Model15(nn.Module):
             last_channel = out_channel
 
         self.classifier = nn.Sequential(
-            nn.Linear(last_channel, last_channel//4),
-            nn.BatchNorm1d(last_channel//4),
+            nn.Linear(last_channel, min(256,last_channel)),
+            nn.BatchNorm1d(min(256,last_channel)),
             nn.ReLU(),
             nn.Linear(last_channel//4, self.class_num)
         )
@@ -386,10 +386,10 @@ def model15Lite_A(num_classes=40, **kwargs) -> Model15:  # 7335MiB
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model15Lite_B(num_classes=40, **kwargs) -> Model15:  # 6003MiB
+def model15Lite_B(num_classes=40, **kwargs) -> Model15:
     return Model15(points=1024, class_num=num_classes,embed_dim=32,
-                 pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
-                 reducers=[4,4], **kwargs)
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,16],
+                 reducers=[4,4,2], **kwargs)
 
 
 def model15Lite_C(num_classes=40, **kwargs) -> Model15:  # 7875MiB
@@ -402,13 +402,13 @@ def model15Lite_D(num_classes=40, **kwargs) -> Model15:  # 9767MiB
                  pre_blocks=[3,3,3], pos_blocks=[3,3,3], k_neighbors=[32,32,16],
                  reducers=[4,4,2], **kwargs)
 
-def model15Lite_E(num_classes=40, **kwargs) -> Model15:  # 6537MiB
-    return Model15(points=1024, class_num=num_classes,embed_dim=32,
+def model15Lite_E(num_classes=40, **kwargs) -> Model15:
+    return Model15(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model15Lite_F(num_classes=40, **kwargs) -> Model15:  # 4969MiB
-    return Model15(points=1024, class_num=num_classes,embed_dim=32,
+def model15Lite_F(num_classes=40, **kwargs) -> Model15:
+    return Model15(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,16,8],
                  reducers=[4,4,4], **kwargs)
 
