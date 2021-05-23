@@ -496,7 +496,7 @@ def model16Light_G(num_classes=40, **kwargs) -> Model16:  # 7831MiB
 
 
 def model16Light_H(num_classes=40, **kwargs) -> Model16:  # 5745MiB
-    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+    return Model16(points=1024, class_num=num_classes,embed_dim=48,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,32,32],
                  reducers=[2,2,2], **kwargs)
 
