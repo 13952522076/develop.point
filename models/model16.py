@@ -1,5 +1,5 @@
 """
-Base on , add KNN fC to FFN
+Base on 15, add SE to FFN, Note:lite is element-wise light is group(knn-pool) wise
 Equals to model14, no dropout
 Residual Model2 with Transformer. Copy from model8.
 Based on Local model, add residual connections.
@@ -200,7 +200,7 @@ class FCBNReLU1DResLocal(nn.Module):
     def forward(self, x):
         identity = x
         x = self.net(x)+ identity
-        x = x*self.channel_att(x)
+        x = x*self.channel_att(F.adaptive_avg_pool1d(x,1))
         return x
 
 
@@ -453,6 +453,52 @@ def model16Lite_H(num_classes=40, **kwargs) -> Model16:  # 5745MiB
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,16,16],
                  reducers=[8,2,2], **kwargs)
 
+
+
+
+
+def model16Light_A(num_classes=40, **kwargs) -> Model16:  # 7335MiB
+    return Model16(points=1024, class_num=num_classes,embed_dim=32,
+                 pre_blocks=[2,4,2], pos_blocks=[2,2,2], k_neighbors=[8,32,32],
+                 reducers=[2,2,2], **kwargs)
+
+def model16Light_B(num_classes=40, **kwargs) -> Model16:
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,16],
+                 reducers=[4,4,2], **kwargs)
+
+
+def model16Light_C(num_classes=40, **kwargs) -> Model16:  # 7875MiB
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[3,3,2], pos_blocks=[3,3,2], k_neighbors=[16,32,32],
+                 reducers=[2,4,2], **kwargs)
+
+def model16Light_D(num_classes=40, **kwargs) -> Model16:  # 9767MiB
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[3,3,3], pos_blocks=[3,3,3], k_neighbors=[32,32,16],
+                 reducers=[4,4,2], **kwargs)
+
+def model16Light_E(num_classes=40, **kwargs) -> Model16:
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
+def model16Light_F(num_classes=40, **kwargs) -> Model16:
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,16,16],
+                 reducers=[4,2,2], **kwargs)
+
+
+def model16Light_G(num_classes=40, **kwargs) -> Model16:  # 7831MiB
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,24,16],
+                 reducers=[4,4,2], **kwargs)
+
+
+def model16Light_H(num_classes=40, **kwargs) -> Model16:  # 5745MiB
+    return Model16(points=1024, class_num=num_classes,embed_dim=64,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,32,32],
+                 reducers=[2,2,2], **kwargs)
 
 if __name__ == '__main__':
     data = torch.rand(2,128,10)
