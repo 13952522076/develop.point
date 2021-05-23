@@ -185,7 +185,6 @@ class FCBNReLU1DResLocal(nn.Module):
             nn.BatchNorm1d(channel),
             nn.ReLU(inplace=True),
             nn.Linear(in_features=knn, out_features=knn, bias=bias),
-            nn.LayerNorm(knn),
             nn.ReLU(inplace=True),
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel)
