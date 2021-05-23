@@ -457,45 +457,47 @@ def model16Lite_H(num_classes=40, **kwargs) -> Model16:  # 5745MiB
 
 
 
-def model16Light_A(num_classes=40, **kwargs) -> Model16:  # 7335MiB
+def model16Light_A(num_classes=40, **kwargs) -> Model16:  # 12857MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=32,
                  pre_blocks=[2,4,2], pos_blocks=[2,2,2], k_neighbors=[8,32,32],
                  reducers=[2,2,2], **kwargs)
 
-def model16Light_B(num_classes=40, **kwargs) -> Model16:
+def model16Light_B(num_classes=40, **kwargs) -> Model16:  # 10099MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,16],
                  reducers=[4,4,2], **kwargs)
 
 
-def model16Light_C(num_classes=40, **kwargs) -> Model16:  # 7875MiB
+def model16Light_C(num_classes=40, **kwargs) -> Model16:  # 14025MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[3,3,2], pos_blocks=[3,3,2], k_neighbors=[16,32,32],
                  reducers=[2,4,2], **kwargs)
 
-def model16Light_D(num_classes=40, **kwargs) -> Model16:  # 9767MiB
+def model16Light_D(num_classes=40, **kwargs) -> Model16:  # 10117MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[3,3,3], pos_blocks=[3,3,3], k_neighbors=[32,32,16],
                  reducers=[4,4,2], **kwargs)
 
-def model16Light_E(num_classes=40, **kwargs) -> Model16:
+
+def model16Light_E(num_classes=40, **kwargs) -> Model16:  #  9701MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model16Light_F(num_classes=40, **kwargs) -> Model16:
+
+def model16Light_F(num_classes=40, **kwargs) -> Model16:  # 9491MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,16,16],
                  reducers=[4,2,2], **kwargs)
 
 
-def model16Light_G(num_classes=40, **kwargs) -> Model16:  # 7831MiB
+def model16Light_G(num_classes=40, **kwargs) -> Model16:  # 10103MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=64,
                  pre_blocks=[2,3,2], pos_blocks=[2,3,2], k_neighbors=[32,24,16],
                  reducers=[4,4,2], **kwargs)
 
 
-def model16Light_H(num_classes=40, **kwargs) -> Model16:  # 5745MiB
+def model16Light_H(num_classes=40, **kwargs) -> Model16:  # 14927MiB
     return Model16(points=1024, class_num=num_classes,embed_dim=48,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,32,32],
                  reducers=[2,2,2], **kwargs)
