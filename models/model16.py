@@ -184,16 +184,24 @@ class FCBNReLU1DResLocal(nn.Module):
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel),
             nn.ReLU(inplace=True),
-            nn.Linear(in_features=knn, out_features=knn, bias=bias),
-            nn.ReLU(inplace=True),
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
-            nn.BatchNorm1d(channel)
+            nn.BatchNorm1d(channel),
+            nn.ReLU(inplace=True)
         )
+        self.channel_att = nn.Sequential(
+            nn.Conv1d(in_channels=channel, out_channels=channel//16, kernel_size=kernel_size, bias=bias),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(in_channels=channel//16, out_channels=channel, kernel_size=kernel_size, bias=bias),
+            nn.Sigmoid()
+        )
+
 
 
     def forward(self, x):
         identity = x
-        return F.relu(self.net(x) + identity, inplace=True)
+        x = self.net(x)+ identity
+        x = x*self.channel_att(x)
+        return x
 
 
 class Attention(nn.Module):
