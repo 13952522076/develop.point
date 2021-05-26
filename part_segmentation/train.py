@@ -45,6 +45,7 @@ def to_categorical(y, num_classes):
     return new_y
 
 
+
 def parse_args():
     parser = argparse.ArgumentParser('Model')
     parser.add_argument('--model', type=str, default='pointnet_part_seg', help='model name')
@@ -193,7 +194,8 @@ def main(args):
             points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
             points = points.transpose(2, 1)
 
-            seg_pred, trans_feat = classifier(points, to_categorical(label, num_classes))
+            categoricals = to_categorical(label, num_classes)
+            seg_pred, trans_feat = classifier(points, categoricals)
             seg_pred = seg_pred.contiguous().view(-1, num_part)
             target = target.view(-1, 1)[:, 0]
             pred_choice = seg_pred.data.max(1)[1]
