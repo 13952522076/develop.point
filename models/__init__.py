@@ -49,3 +49,4 @@ from .model16 import model16A, model16B, model16C, model16D, model16E, model16Li
                      model16Lite_C, model16Lite_D, model16Lite_E, model16Lite_F, model16Lite_G, model16Lite_H, \
                      model16Light_A, model16Light_B, model16Light_C, model16Light_D, model16Light_E, model16Light_F,\
                      model16Light_G, model16Light_H
+from .model17 import model17A, model17F
