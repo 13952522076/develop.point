@@ -13,6 +13,7 @@ import importlib
 import shutil
 import provider
 import numpy as np
+import torch.backends.cudnn as cudnn
 
 from pathlib import Path
 from tqdm import tqdm
@@ -118,6 +119,7 @@ def main(args):
 
     classifier = MODEL.get_model(num_part, normal_channel=args.normal).cuda()
     classifier = torch.nn.DataParallel(classifier)
+    cudnn.benchmark = True
     criterion = MODEL.get_loss().cuda()
     classifier.apply(inplace_relu)
 
@@ -194,8 +196,7 @@ def main(args):
             points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
             points = points.transpose(2, 1)
 
-            categoricals = to_categorical(label, num_classes)
-            seg_pred, trans_feat = classifier(points, categoricals)
+            seg_pred, trans_feat = classifier(points, to_categorical(label, num_classes))
             seg_pred = seg_pred.contiguous().view(-1, num_part)
             target = target.view(-1, 1)[:, 0]
             pred_choice = seg_pred.data.max(1)[1]
