@@ -346,7 +346,7 @@ class Model18(nn.Module):
         x = self.embedding(x) # B,D,N
         for i in range(self.stages):
             xyz, x = self.local_grouper_list[i](xyz, x.permute(0, 2, 1))   # [b,g,3]  [b,g,k,d]
-            print(f"x shape: {x.shape}")
+            # print(f"x shape: {x.shape}")
             x = self.pre_blocks_list[i](x)  # [b,d,g]
             x = self.pos_blocks_list[i](x)  # [b,d,g]
 
