@@ -61,7 +61,7 @@ def main():
     if args.checkpoint is None:
         time_stamp = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
         args.checkpoint = args.model + time_stamp
-    args.checkpoint = 'checkpoints/' +args.checkpoint
+    args.checkpoint = 'outputs/' +args.checkpoint
     if not os.path.isdir(args.checkpoint):
         mkdir_p(args.checkpoint)
         save_args(args)
