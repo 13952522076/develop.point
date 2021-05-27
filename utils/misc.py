@@ -10,12 +10,16 @@ import time
 import math
 import torch
 import shutil
+import numpy as np
+import random
+
 
 import torch.nn as nn
 import torch.nn.init as init
 from torch.autograd import Variable
 
-__all__ = ['get_mean_and_std', 'init_params', 'mkdir_p', 'AverageMeter', 'progress_bar','save_model',"save_args"]
+__all__ = ['get_mean_and_std', 'init_params', 'mkdir_p', 'AverageMeter',
+           'progress_bar','save_model',"save_args","set_seed"]
 
 
 def get_mean_and_std(dataset):
@@ -179,3 +183,17 @@ def save_args(args):
     for k, v in vars(args).items():
         file.write(f"{k}:\t {v}\n")
     file.close()
+
+
+
+def set_seed(seed=None):
+    if seed is None:
+        return
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = ("%s" % seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True

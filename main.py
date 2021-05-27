@@ -3,7 +3,7 @@ for training new model with pointnet2_ops
 Usage:
 python main_new.py --use_normals --use_uniform_sample --model new1Amax
 or
-nohup python classify.py --model new1A > new_nohup/PCTNEW.out &
+nohup python main.py --model new1A > new_nohup/PCTNEW.out &
 """
 import argparse
 import os
@@ -16,11 +16,10 @@ import torch.utils.data
 import torch.utils.data.distributed
 from torch.utils.data import DataLoader
 import models as models
-from utils import Logger, mkdir_p, progress_bar, save_model, save_args
+from utils import Logger, mkdir_p, progress_bar, save_model, save_args, set_seed
 from data import ModelNet40
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
-import torch.nn as nn
 from helper import cal_loss
 import numpy as np
 
@@ -41,15 +40,13 @@ def parse_args():
     parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
     parser.add_argument('--learning_rate', default=0.01, type=float, help='learning rate in training')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
-    # parser.add_argument('--use_normals', action='store_true', default=False, help='use normals besides x,y,z')
-    # parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
-    # parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampling')
-    parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
+    parser.add_argument('--seed', type=int, help='random seed')
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    print(f" ==> args are: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
@@ -57,10 +54,14 @@ def main():
         torch.cuda.manual_seed(args.seed)
     else:
         device = 'cpu'
-    print(f"==> Using device: {device}")
+    if args.seed:
+        print(f" ==> Fixing random seed to {args.seed}")
+        set_seed(args.seed)
+    print(f" ==> Using device: {device}")
     if args.checkpoint is None:
         time_stamp = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
-        args.checkpoint = 'checkpoints_main/' + args.model + time_stamp
+        args.checkpoint = args.model + time_stamp
+    args.checkpoint = 'checkpoints/' +args.checkpoint
     if not os.path.isdir(args.checkpoint):
         mkdir_p(args.checkpoint)
         save_args(args)
@@ -78,12 +79,11 @@ def main():
     # Model
     print('==> Building model..')
     net = models.__dict__[args.model]()
-    criterion = nn.CrossEntropyLoss().to(device)
+    criterion = cal_loss
     net = net.to(device)
     # criterion = criterion.to(device)
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
-        cudnn.benchmark = True
 
     optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
     scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100)

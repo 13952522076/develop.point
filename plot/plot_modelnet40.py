@@ -7,8 +7,10 @@ import h5py
 f = h5py.File("/Users/melody/Downloads/ply_data_test0.h5", 'r')
 data = f["data"]
 id = np.random.randint(0,2048)
-id=800
-sample = data[id,0:1024,:]
+id=800 #airplane 11
+id=2001 # lighter
+points=2000
+sample = data[id,0:points,:]
 
 
 fig = pyplot.figure()
@@ -45,4 +47,4 @@ ax.set_axis_off()
 ax.get_xaxis().get_major_formatter().set_useOffset(False)
 pyplot.tight_layout()
 pyplot.show()
-fig.savefig(f"{id}.pdf", bbox_inches='tight', pad_inches=0.05, transparent=True)
+fig.savefig(f"{id}_{points}.pdf", bbox_inches='tight', pad_inches=0.05, transparent=True)
