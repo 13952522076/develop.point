@@ -48,10 +48,8 @@ def main():
     args = parse_args()
     print(f" ==> args are: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
-    torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         device = 'cuda'
-        torch.cuda.manual_seed(args.seed)
     else:
         device = 'cpu'
     if args.seed:
