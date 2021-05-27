@@ -400,15 +400,15 @@ def model8H(num_classes=40, **kwargs) -> Model8:
 
 if __name__ == '__main__':
     import datetime
-    xyz1 = torch.rand(10,512,3).to("cuda")
-    xyz2 = torch.rand(10,1024,3).to("cuda")
+    xyz1 = torch.rand(32,512,3).to("cuda")
+    xyz2 = torch.rand(32,1024,3).to("cuda")
     time_cost = datetime.datetime.now()
-    for _ in range(100):
+    for _ in range(1000):
         dis1 = square_distance(xyz1,xyz2)
     time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
     print(f"time: {time_cost}s")
     time_cost = datetime.datetime.now()
-    for _ in range(100):
+    for _ in range(1000):
         dis2 = square_distance2(xyz1, xyz2)
     time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
     print(f"time: {time_cost}s")
