@@ -40,7 +40,8 @@ def parse_args():
     parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
     parser.add_argument('--learning_rate', default=0.01, type=float, help='learning rate in training')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
-    parser.add_argument('--seed', type=int, help='random seed')
+    parser.add_argument('--seed', type=int, default=1,
+                        help='fixed random seed, actually still some randomness. even the detailed set_seed func.')
     return parser.parse_args()
 
 
@@ -48,13 +49,15 @@ def main():
     args = parse_args()
     print(f" ==> args are: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
+    torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         device = 'cuda'
+        torch.cuda.manual_seed(args.seed)
     else:
         device = 'cpu'
-    if args.seed:
-        print(f" ==> Fixing random seed to {args.seed}")
-        set_seed(args.seed)
+    # if args.seed:
+    #     print(f" ==> Fixing random seed to {args.seed}")
+    #     set_seed(args.seed)
     print(f" ==> Using device: {device}")
     if args.checkpoint is None:
         time_stamp = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
@@ -82,6 +85,7 @@ def main():
     # criterion = criterion.to(device)
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
+        cudnn.benchmark = True
 
     optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
     scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100)
