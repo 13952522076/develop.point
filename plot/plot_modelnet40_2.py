@@ -14,8 +14,8 @@ id=2001 # lighter
 id=1
 points=2048
 save_fig=True
-rotation=False
-scale=False
+rotation=True
+scale=True
 
 
 datset = ModelNet40(points, partition='train', rotation=rotation, scale=scale)

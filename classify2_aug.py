@@ -17,7 +17,7 @@ import torch.utils.data.distributed
 from torch.utils.data import DataLoader
 import models as models
 from utils import Logger, mkdir_p, progress_bar, save_model, save_args
-from data import ModelNet40
+from data_aug import ModelNet40
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
 from helper import cal_loss
@@ -45,7 +45,8 @@ def parse_args():
     # parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampling')
     parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
 
-    # parser.add_argument('--aug_scale', action='store_true', default=False, help='use normals besides x,y,z')
+    parser.add_argument('--aug_scale', action='store_true', default=False, help='scale the size')
+    parser.add_argument('--aug_rotate', action='store_true', default=False, help='rotate the direction')
     return parser.parse_args()
 
 
@@ -72,10 +73,12 @@ def main():
                           'Valid-Loss', 'Valid-acc-B', 'Valid-acc'])
 
     print('==> Preparing data..')
-    train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
-                              batch_size=args.batch_size, shuffle=True, drop_last=True)
-    test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=8,
-                             batch_size=args.batch_size, shuffle=True, drop_last=False)
+    train_loader = DataLoader(
+        ModelNet40(partition='train', num_points=args.num_points, rotation=args.aug_rotate, scale=args.aug_scale),
+        num_workers=8, batch_size=args.batch_size, shuffle=True, drop_last=True)
+    test_loader = DataLoader(
+        ModelNet40(partition='test', num_points=args.num_points),
+        num_workers=8, batch_size=args.batch_size, shuffle=True, drop_last=False)
 
     # Model
     print('==> Building model..')

@@ -68,8 +68,10 @@ def rotation_pointcloud(pointcloud):
     """
     # convert the input to an array
     axis = (np.random.random([3])>0.6).astype(float)
+    if sum(axis)==0:
+        return pointcloud
     axis = np.asarray(axis)
-    theta = np.random.random()
+    theta = np.random.random()*-10
     # Get unit vector of our axis
     axis = axis/math.sqrt(np.dot(axis, axis))
     # take the cosine of out rotation degree in radians
@@ -106,7 +108,7 @@ class ModelNet40(Dataset):
         pointcloud = self.data[item][:self.num_points]
         label = self.label[item]
         if self.partition == 'train':
-            pointcloud = random_point_dropout(pointcloud) # open for dgcnn not for our idea  for all
+            # pointcloud = random_point_dropout(pointcloud) # open for dgcnn not for our idea  for all
             pointcloud = translate_pointcloud(pointcloud)
             np.random.shuffle(pointcloud)
             if self.rotation:
