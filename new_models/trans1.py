@@ -11,11 +11,6 @@ from einops import rearrange, repeat
 def square_distance(src, dst):
     """
     Calculate Euclid distance between each two points.
-    src^T * dst = xn * xm + yn * ym + zn * zm；
-    sum(src^2, dim=-1) = xn*xn + yn*yn + zn*zn;
-    sum(dst^2, dim=-1) = xm*xm + ym*ym + zm*zm;
-    dist = (xn - xm)^2 + (yn - ym)^2 + (zn - zm)^2
-         = sum(src**2,dim=-1)+sum(dst**2,dim=-1)-2*src^T*dst
     Input:
         src: source points, [B, N, C]
         dst: target points, [B, M, C]
@@ -28,23 +23,6 @@ def square_distance(src, dst):
     dist += torch.sum(src ** 2, -1).view(B, N, 1)
     dist += torch.sum(dst ** 2, -1).view(B, 1, M)
     return dist
-
-def square_distance2(src, dst):
-    """
-    Calculate Euclid distance between each two points.
-    src^T * dst = xn * xm + yn * ym + zn * zm；
-    sum(src^2, dim=-1) = xn*xn + yn*yn + zn*zn;
-    sum(dst^2, dim=-1) = xm*xm + ym*ym + zm*zm;
-    dist = (xn - xm)^2 + (yn - ym)^2 + (zn - zm)^2
-         = sum(src**2,dim=-1)+sum(dst**2,dim=-1)-2*src^T*dst
-    Input:
-        src: source points, [B, N, C]
-        dst: target points, [B, M, C]
-    Output:
-        dist: per-point square distance, [B, N, M]
-    """
-    return torch.sum((src[:, :, None] - dst[:, None]) ** 2, dim=-1)
-
 
 def index_points(points, idx):
     """
@@ -297,11 +275,11 @@ class PosExtraction(nn.Module):
         return self.transformer(self.operation(x))
 
 
-class Model8(nn.Module):
+class Trans1(nn.Module):
     def __init__(self, points=1024, class_num=40, embed_dim=64,
                  pre_blocks=[2,2,2,2], pos_blocks=[2,2,2,2], k_neighbors=[32,32,32,32],
                  reducers=[2,2,2,2], **kwargs):
-        super(Model8, self).__init__()
+        super(Trans1, self).__init__()
         self.stages = len(pre_blocks)
         self.class_num = class_num
         self.points=points
@@ -358,23 +336,23 @@ class Model8(nn.Module):
 
 
 
-def model8A(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+def model8A(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[4,2,2], **kwargs)
 
-def model8B(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+def model8B(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=32,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[4,2,2], **kwargs)
 
-def model8C(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+def model8C(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=32,
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[4,2,2], **kwargs)
 
-def model8D(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=32,
+def model8D(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=32,
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
                  reducers=[4,2,2], **kwargs)
 
@@ -383,18 +361,18 @@ def model8E(num_classes=40, **kwargs) -> Model8:
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[20,20,20],
                  reducers=[4,2,2], **kwargs)
 
-def model8F(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+def model8F(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[4,4,4], pos_blocks=[2,2,2], k_neighbors=[16,16,16],
                  reducers=[4,2,2], **kwargs)
 
-def model8G(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+def model8G(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[4,4], pos_blocks=[2,2], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model8H(num_classes=40, **kwargs) -> Model8:
-    return Model8(points=1024, class_num=num_classes, embed_dim=64,
+def model8H(num_classes=40, **kwargs) -> Trans1:
+    return Trans1(points=1024, class_num=num_classes, embed_dim=64,
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[16,16],
                  reducers=[4,4], **kwargs)
 
@@ -402,15 +380,4 @@ if __name__ == '__main__':
     import datetime
     xyz1 = torch.rand(32,512,3).to("cuda")
     xyz2 = torch.rand(32,1024,3).to("cuda")
-    time_cost = datetime.datetime.now()
-    for _ in range(1000):
-        dis1 = square_distance(xyz1,xyz2)
-    time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
-    print(f"time: {time_cost}s")
-    time_cost = datetime.datetime.now()
-    for _ in range(1000):
-        dis2 = square_distance2(xyz1, xyz2)
-    time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
-    print(f"time: {time_cost}s")
-    dis2= square_distance(xyz1,xyz2)
-    # print(dis2==dis1)
+

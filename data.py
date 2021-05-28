@@ -81,6 +81,12 @@ class ModelNet40(Dataset):
 if __name__ == '__main__':
     train = ModelNet40(1024)
     test = ModelNet40(1024, 'test')
-    for data, label in train:
-        print(data.shape)
-        print(label.shape)
+    # for data, label in train:
+    #     print(data.shape)
+    #     print(label.shape)
+    from torch.utils.data import DataLoader
+    train_loader = DataLoader(ModelNet40(partition='train', num_points=1024), num_workers=4,
+                              batch_size=32, shuffle=True, drop_last=True)
+    for batch_idx, (data, label) in enumerate(train_loader):
+        print(f"batch_idx: {batch_idx}  | data shape: {data.shape} | ;lable shape: {label.shape}")
+
