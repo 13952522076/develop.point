@@ -67,7 +67,7 @@ def rotation_pointcloud(pointcloud):
     the user specified axis by theta radians.
     """
     # convert the input to an array
-    axis = (np.random.random([3])>0.6).astype(float)
+    axis = (np.random.random([3])>0.6).astype('float32')
     if sum(axis)==0:
         return pointcloud
     axis = np.asarray(axis)
@@ -91,7 +91,7 @@ def rotation_pointcloud(pointcloud):
 
 
 def scale_pointcloud(pointcloud):
-    scale = np.random.uniform(0.9, 1.1, [1, 3])
+    scale = np.random.uniform(0.9, 1.1, [1, 3]).astype('float32')
     return  pointcloud*scale
 
 
