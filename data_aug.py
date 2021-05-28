@@ -87,12 +87,12 @@ def rotation_pointcloud(pointcloud):
     rotation = np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
                      [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
-    return np.matmul(pointcloud, rotation)
+    return np.matmul(pointcloud, rotation).astype('float32')
 
 
 def scale_pointcloud(pointcloud):
-    scale = np.random.uniform(0.9, 1.1, [1, 3]).astype('float32')
-    return  pointcloud*scale
+    scale = np.random.uniform(0.9, 1.1, [1, 3])
+    return (pointcloud*scale).astype('float32')
 
 
 
@@ -133,4 +133,4 @@ if __name__ == '__main__':
                               batch_size=32, shuffle=True, drop_last=True)
     for batch_idx, (data, label) in enumerate(train_loader):
         print(f"batch_idx: {batch_idx}  | data shape: {data.shape} | ;lable shape: {label.shape}")
-
+        print(type(data))
