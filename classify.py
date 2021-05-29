@@ -37,7 +37,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=32, help='batch size in training')
     parser.add_argument('--model', default='PCT', help='model name [default: pointnet_cls]')
     parser.add_argument('--num_classes', default=40, type=int, choices=[10, 40], help='training on ModelNet10/40')
-    parser.add_argument('--epoch', default=250, type=int, help='number of epoch in training')
+    parser.add_argument('--epoch', default=350, type=int, help='number of epoch in training')
     parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
     parser.add_argument('--learning_rate', default=0.01, type=float, help='learning rate in training')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
@@ -50,6 +50,7 @@ def parse_args():
 
 def main():
     args = parse_args()
+    print(f"args: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
