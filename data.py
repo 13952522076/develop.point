@@ -69,7 +69,7 @@ class ModelNet40(Dataset):
         pointcloud = self.data[item][:self.num_points]
         label = self.label[item]
         if self.partition == 'train':
-            pointcloud = random_point_dropout(pointcloud) # open for dgcnn not for our idea  for all
+            # pointcloud = random_point_dropout(pointcloud) # open for dgcnn not for our idea  for all
             pointcloud = translate_pointcloud(pointcloud)
             np.random.shuffle(pointcloud)
         return pointcloud, label
