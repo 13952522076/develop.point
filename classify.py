@@ -33,6 +33,7 @@ def parse_args():
     # parser.add_argument('-d', '--data_path', default='data/modelnet40_normal_resampled/', type=str)
     parser.add_argument('-c', '--checkpoint', type=str, metavar='PATH',
                         help='path to save checkpoint (default: checkpoint)')
+    parser.add_argument('--msg', type=str, help='message after checkpoint')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size in training')
     parser.add_argument('--model', default='PCT', help='model name [default: pointnet_cls]')
     parser.add_argument('--num_classes', default=40, type=int, choices=[10, 40], help='training on ModelNet10/40')
@@ -57,9 +58,11 @@ def main():
     else:
         device = 'cpu'
     print(f"==> Using device: {device}")
-    if args.checkpoint is None:
-        time_stamp = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
-        args.checkpoint = 'checkpoints/' + args.model + time_stamp
+    if args.msg is None:
+        message = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
+    else:
+        message = "-"+args.msg
+    args.checkpoint = 'checkpoints/' + args.model + message
     if not os.path.isdir(args.checkpoint):
         mkdir_p(args.checkpoint)
         save_args(args)
@@ -119,9 +122,10 @@ def main():
                        train_out["loss"], train_out["acc_avg"], train_out["acc"],
                        test_out["loss"], test_out["acc_avg"], test_out["acc"]])
         print(
-            f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']} acc:{train_out['acc']} time:{train_out['time']}s)")
+            f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']}% acc:{train_out['acc']}% time:{train_out['time']}s")
         print(
-            f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
+            f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']}% "
+            f"acc:{test_out['acc']}% time:{test_out['time']}s [best test acc: {best_test_acc}%] \n\n")
     logger.close()
 
     print(f"++++++++" * 2 + "Final results" + "++++++++" * 2)

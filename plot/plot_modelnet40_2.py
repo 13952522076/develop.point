@@ -6,20 +6,20 @@ import h5py
 import math
 import sys
 sys.path.append("..")
-from data_aug import ModelNet40
+from data import ModelNet40
 
 id = np.random.randint(0,2048)
 id=800 #airplane 11
 id=2001 # lighter
 id=1
 points=2048
-save_fig=True
+save_fig=False
 rotation=True
 scale=True
 
 
-datset = ModelNet40(points, partition='train', rotation=rotation, scale=scale)
-sample,label = datset.__getitem__(10)
+datset = ModelNet40(points, partition='test')
+sample,label = datset.__getitem__(15)
 
 
 
