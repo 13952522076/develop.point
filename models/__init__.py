@@ -53,3 +53,4 @@ from .model17 import model17A, model17F
 from .model18 import model18A1, model18A2, model18A3
 from .model19 import model19A, model19B
 from .model20 import model20A, model20B
+from .model21 import model21A, model21B
