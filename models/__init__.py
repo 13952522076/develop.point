@@ -51,3 +51,4 @@ from .model16 import model16A, model16B, model16C, model16D, model16E, model16Li
                      model16Light_G, model16Light_H
 from .model17 import model17A, model17F
 from .model18 import model18A1, model18A2, model18A3
+from .model19 import model19A, model19B
