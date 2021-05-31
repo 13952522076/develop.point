@@ -394,6 +394,11 @@ def model10H(num_classes=40, **kwargs) -> Model10:
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[16,16],
                  reducers=[4,4], **kwargs)
 
+def model10I(num_classes=40, **kwargs) -> Model10:
+    return Model10(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[16,16],
+                 reducers=[4,4], **kwargs)
+
 if __name__ == '__main__':
     data = torch.rand(2,128,10)
     att = Attention(128)
