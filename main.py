@@ -110,7 +110,7 @@ def main():
                              batch_size=args.batch_size, shuffle=True, drop_last=False)
 
     optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
-    scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100, start_epoch=start_epoch)
+    scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100, last_epoch=start_epoch-1)
 
 
     for epoch in range(start_epoch, args.epoch):
