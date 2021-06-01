@@ -1,9 +1,9 @@
 """
-for training new model with pointnet2_ops
+for training with resume functions.
 Usage:
-python main_new.py --use_normals --use_uniform_sample --model new1Amax
+python main.py --model model22A --msg demo
 or
-nohup python main.py --model new1A > new_nohup/PCTNEW.out &
+nohup python main.py --model model22A --msg demo > nohup/model22A_demo.out &
 """
 import argparse
 import os
@@ -16,7 +16,7 @@ import torch.utils.data
 import torch.utils.data.distributed
 from torch.utils.data import DataLoader
 import models as models
-from utils import Logger, mkdir_p, progress_bar, save_model, save_args, set_seed
+from utils import Logger, mkdir_p, progress_bar, save_model, save_args
 from data import ModelNet40
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
@@ -33,21 +33,21 @@ def parse_args():
     # parser.add_argument('-d', '--data_path', default='data/modelnet40_normal_resampled/', type=str)
     parser.add_argument('-c', '--checkpoint', type=str, metavar='PATH',
                         help='path to save checkpoint (default: checkpoint)')
+    parser.add_argument('--msg', type=str, help='message after checkpoint')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size in training')
     parser.add_argument('--model', default='PCT', help='model name [default: pointnet_cls]')
     parser.add_argument('--num_classes', default=40, type=int, choices=[10, 40], help='training on ModelNet10/40')
-    parser.add_argument('--epoch', default=250, type=int, help='number of epoch in training')
+    parser.add_argument('--epoch', default=350, type=int, help='number of epoch in training')
     parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
     parser.add_argument('--learning_rate', default=0.01, type=float, help='learning rate in training')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
-    parser.add_argument('--seed', type=int, default=1,
-                        help='fixed random seed, actually still some randomness. even the detailed set_seed func.')
+    parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
-    print(f" ==> args are: {args}")
+    print(f"args: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
@@ -55,27 +55,12 @@ def main():
         torch.cuda.manual_seed(args.seed)
     else:
         device = 'cpu'
-    # if args.seed:
-    #     print(f" ==> Fixing random seed to {args.seed}")
-    #     set_seed(args.seed)
-    print(f" ==> Using device: {device}")
-    if args.checkpoint is None:
-        time_stamp = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
-        args.checkpoint = args.model + time_stamp
-    args.checkpoint = 'outputs/' +args.checkpoint
-    if not os.path.isdir(args.checkpoint):
-        mkdir_p(args.checkpoint)
-        save_args(args)
-        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model)
-        logger.set_names(["Epoch-Num", 'Learning-Rate',
-                          'Train-Loss', 'Train-acc-B', 'Train-acc',
-                          'Valid-Loss', 'Valid-acc-B', 'Valid-acc'])
-
-    print('==> Preparing data..')
-    train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
-                              batch_size=args.batch_size, shuffle=True, drop_last=True)
-    test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=8,
-                             batch_size=args.batch_size, shuffle=True, drop_last=False)
+    print(f"==> Using device: {device}")
+    if args.msg is None:
+        message = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
+    else:
+        message = "-"+args.msg
+    args.checkpoint = 'checkpoints/' + args.model + message
 
     # Model
     print('==> Building model..')
@@ -87,17 +72,47 @@ def main():
         net = torch.nn.DataParallel(net)
         cudnn.benchmark = True
 
-    optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
-    scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100)
-
     best_test_acc = 0.  # best test accuracy
     best_train_acc = 0.
     best_test_acc_avg = 0.
     best_train_acc_avg = 0.
     best_test_loss = float("inf")
     best_train_loss = float("inf")
-
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
+
+
+    if not os.path.isdir(args.checkpoint):
+        mkdir_p(args.checkpoint)
+        save_args(args)
+        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model)
+        logger.set_names(["Epoch-Num", 'Learning-Rate',
+                          'Train-Loss', 'Train-acc-B', 'Train-acc',
+                          'Valid-Loss', 'Valid-acc-B', 'Valid-acc'])
+    else:
+        print(f"Resuming checkpoint from {args.checkpoint}")
+        checkpoint_path = os.path.join(args.checkpoint, "last_checkpoint.pth")
+        checkpoint = torch.load(checkpoint_path)
+        net.load_state_dict(checkpoint['net'])
+        start_epoch = checkpoint['epoch']
+        best_test_acc = checkpoint['best_test_acc']
+        best_train_acc = checkpoint['best_train_acc']
+        best_test_acc_avg = checkpoint['best_test_acc_avg']
+        best_train_acc_avg = checkpoint['best_train_acc_avg']
+        best_test_loss = checkpoint['best_test_loss']
+        best_train_loss = checkpoint['best_train_loss']
+        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model, resume=True)
+
+    print('==> Preparing data..')
+    train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
+                              batch_size=args.batch_size, shuffle=True, drop_last=True)
+    test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=8,
+                             batch_size=args.batch_size, shuffle=True, drop_last=False)
+
+    optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
+    scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100, start_epoch=start_epoch)
+
+
     for epoch in range(start_epoch, args.epoch):
         print('Epoch(%d/%s) Learning Rate %s:' % (epoch + 1, args.epoch, optimizer.param_groups[0]['lr']))
         train_out = train(net, train_loader, optimizer, criterion, device)  # {"loss", "acc", "acc_avg", "time"}
@@ -117,14 +132,24 @@ def main():
         best_test_loss = test_out["loss"] if (test_out["loss"] < best_test_loss) else best_test_loss
         best_train_loss = train_out["loss"] if (train_out["loss"] < best_train_loss) else best_train_loss
 
-        save_model(net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best)
+
+        save_model(
+            net, epoch, path=args.checkpoint, acc=test_out["acc"], is_best=is_best,
+            best_test_acc=best_test_acc,  # best test accuracy
+            best_train_acc = best_train_acc,
+            best_test_acc_avg = best_test_acc_avg,
+            best_train_acc_avg = best_train_acc_avg,
+            best_test_loss = best_test_loss,
+            best_train_loss = best_train_loss
+        )
         logger.append([epoch, optimizer.param_groups[0]['lr'],
                        train_out["loss"], train_out["acc_avg"], train_out["acc"],
                        test_out["loss"], test_out["acc_avg"], test_out["acc"]])
         print(
-            f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']} acc:{train_out['acc']} time:{train_out['time']}s)")
+            f"Training loss:{train_out['loss']} acc_avg:{train_out['acc_avg']}% acc:{train_out['acc']}% time:{train_out['time']}s")
         print(
-            f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']} acc:{test_out['acc']}% time:{test_out['time']}s) \n\n")
+            f"Testing loss:{test_out['loss']} acc_avg:{test_out['acc_avg']}% "
+            f"acc:{test_out['acc']}% time:{test_out['time']}s [best test acc: {best_test_acc}%] \n\n")
     logger.close()
 
     print(f"++++++++" * 2 + "Final results" + "++++++++" * 2)
