@@ -16,12 +16,13 @@ import torch.utils.data
 import torch.utils.data.distributed
 from torch.utils.data import DataLoader
 import models as models
-from utils import Logger, mkdir_p, progress_bar, save_model, save_args
+from utils import Logger, mkdir_p, progress_bar, save_model, save_args, IOStream
 from data import ModelNet40
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import sklearn.metrics as metrics
 from helper import cal_loss
 import numpy as np
+import torch.nn.functional as F
 
 model_names = sorted(name for name in models.__dict__
                      if callable(models.__dict__[name]))
@@ -45,8 +46,25 @@ def parse_args():
     # parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     # parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampling')
     parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
+
+    # Voting evaluation, referring: https://github.com/CVMI-Lab/PAConv/blob/main/obj_cls/eval_voting.py
+    parser.add_argument('--NUM_PEPEAT', type=int, default=300)
+    parser.add_argument('--NUM_VOTE', type=int, default=10)
     return parser.parse_args()
 
+
+class PointcloudScale(object):  # input random scaling
+    def __init__(self, scale_low=2. / 3., scale_high=3. / 2.):
+        self.scale_low = scale_low
+        self.scale_high = scale_high
+
+    def __call__(self, pc):
+        bsize = pc.size()[0]
+        for i in range(bsize):
+            xyz = np.random.uniform(low=self.scale_low, high=self.scale_high, size=[3])
+            scales = torch.from_numpy(xyz).float().cuda()
+            pc[i, :, 0:3] = torch.mul(pc[i, :, 0:3], scales)
+        return pc
 
 def main():
     args = parse_args()
@@ -68,7 +86,6 @@ def main():
     print('==> Preparing data..')
     test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=8,
                              batch_size=args.batch_size, shuffle=True, drop_last=False)
-
     # Model
     print('==> Building model..')
     net = models.__dict__[args.model]()
@@ -76,15 +93,18 @@ def main():
     net = net.to(device)
     checkpoint_path = os.path.join(args.checkpoint, 'best_checkpoint.pth')
     checkpoint = torch.load(checkpoint_path)
-
-
     # criterion = criterion.to(device)
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
         cudnn.benchmark = True
     net.load_state_dict(checkpoint['net'])
     test_out = validate(net, test_loader, criterion, device)
-    print(test_out)
+    print(f"Vanilla out: {test_out}")
+
+    print(f"===> start voting evaluation...")
+    voting(net, test_loader, device, args)
+
+
 
 
 def validate(net, testloader, criterion, device):
@@ -119,6 +139,52 @@ def validate(net, testloader, criterion, device):
         "acc_avg": float("%.3f" % (100. * metrics.balanced_accuracy_score(test_true, test_pred))),
         "time": time_cost
     }
+
+
+def voting(net, testloader, device, args):
+    io = IOStream(args.checkpoint + '/evaluate_voting.log')
+    io.cprint(str(args))
+
+
+    net.eval()
+    best_acc = 0
+    pointscale = PointcloudScale(scale_low=0.8, scale_high=1.18)  # set the range of scaling
+
+    for i in range(args.NUM_PEPEAT):
+        test_true = []
+        test_pred = []
+
+        for batch_idx, (data, label) in enumerate(testloader):
+            data, label = data.to(device), label.to(device).squeeze()
+            pred = 0
+            for v in range(args.NUM_VOTE):
+                new_data = data
+                # batch_size = data.size()[0]
+                if v > 0:
+                    new_data.data = pointscale(new_data.data)
+                with torch.no_grad():
+                    pred += F.softmax(net(new_data.permute(0, 2, 1)), dim=1)  # sum 10 preds
+            pred /= args.NUM_VOTE  # avg the preds!
+            label = label.view(-1)
+            pred_choice = pred.max(dim=1)[1]
+            test_true.append(label.cpu().numpy())
+            test_pred.append(pred_choice.detach().cpu().numpy())
+        test_true = np.concatenate(test_true)
+        test_pred = np.concatenate(test_pred)
+        test_acc = metrics.accuracy_score(test_true, test_pred)
+        if test_acc > best_acc:
+            best_acc = test_acc
+        outstr = 'Voting %d, test acc: %.6f,' % (i, test_acc * 100)
+        io.cprint(outstr)
+
+    final_outstr = 'Final voting test acc: %.6f,' % (best_acc * 100)
+    io.cprint(final_outstr)
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

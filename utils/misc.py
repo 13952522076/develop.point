@@ -19,7 +19,7 @@ import torch.nn.init as init
 from torch.autograd import Variable
 
 __all__ = ['get_mean_and_std', 'init_params', 'mkdir_p', 'AverageMeter',
-           'progress_bar','save_model',"save_args","set_seed"]
+           'progress_bar','save_model',"save_args","set_seed", "IOStream"]
 
 
 def get_mean_and_std(dataset):
@@ -197,3 +197,18 @@ def set_seed(seed=None):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
+
+
+
+# create a file and write the text into it
+class IOStream():
+    def __init__(self, path):
+        self.f = open(path, 'a')
+
+    def cprint(self, text):
+        print(text)
+        self.f.write(text+'\n')
+        self.f.flush()
+
+    def close(self):
+        self.f.close()
