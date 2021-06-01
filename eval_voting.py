@@ -1,9 +1,6 @@
 """
-for training new model with pointnet2_ops
-Usage:
-python main_new.py --use_normals --use_uniform_sample --model new1Amax
-or
-nohup python classify.py --model new1A > new_nohup/PCTNEW.out &
+python eval_voting.py --model model21H --msg try2
+nohup python eval_voting.py --model model21H --msg try2 > model21H_try2_evaluate_voting.out &
 """
 import argparse
 import os
