@@ -76,13 +76,13 @@ def main():
     net = net.to(device)
     checkpoint_path = os.path.join(args.checkpoint, 'best_checkpoint.pth')
     checkpoint = torch.load(checkpoint_path)
-    net.load_state_dict(checkpoint['net'])
+
 
     # criterion = criterion.to(device)
     if device == 'cuda':
         net = torch.nn.DataParallel(net)
         cudnn.benchmark = True
-
+    net.load_state_dict(checkpoint['net'])
     test_out = validate(net, test_loader, criterion, device)
     print(test_out)
 
