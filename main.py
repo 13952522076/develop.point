@@ -79,7 +79,7 @@ def main():
     best_test_loss = float("inf")
     best_train_loss = float("inf")
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-
+    optimizer_dict = None
 
 
     if not os.path.isdir(args.checkpoint):
@@ -102,6 +102,7 @@ def main():
         best_test_loss = checkpoint['best_test_loss']
         best_train_loss = checkpoint['best_train_loss']
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title="ModelNet" + args.model, resume=True)
+        optimizer_dict = checkpoint['optimizer']
 
     print('==> Preparing data..')
     train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
@@ -110,6 +111,8 @@ def main():
                              batch_size=args.batch_size, shuffle=True, drop_last=False)
 
     optimizer = torch.optim.SGD(net.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.weight_decay)
+    if optimizer_dict is not None:
+        optimizer.load_state_dict(optimizer_dict)
     scheduler = CosineAnnealingLR(optimizer, args.epoch, eta_min=args.learning_rate / 100, last_epoch=start_epoch-1)
 
 
@@ -140,7 +143,8 @@ def main():
             best_test_acc_avg = best_test_acc_avg,
             best_train_acc_avg = best_train_acc_avg,
             best_test_loss = best_test_loss,
-            best_train_loss = best_train_loss
+            best_train_loss = best_train_loss,
+            optimizer = optimizer.state_dict()
         )
         logger.append([epoch, optimizer.param_groups[0]['lr'],
                        train_out["loss"], train_out["acc_avg"], train_out["acc"],
