@@ -81,67 +81,44 @@ class PAConv(nn.Module):
         # use MLP at the 1st layer, same with DGCNN
         x = get_graph_feature(x, k=self.k, idx=idx)
         x = x.permute(0, 3, 1, 2)  # b,2cin,n,k
-        print(f"x = x.permute(0, 3, 1, 2) shape: {x.shape}")
         x = F.relu(self.conv1(x))
         x1 = x.max(dim=-1, keepdim=False)[0]
-        print(f"x1 = x.max(dim=-1, keepdim=False)[0]  shape: {x1.shape}")
         #################
         # replace the last 4 DGCNN-EdgeConv with PAConv:
         """CUDA implementation of PAConv: (presented in the supplementary material of the paper)"""
         """feature transformation:"""
         x2, center2 = feat_trans_dgcnn(point_input=x1, kernel=self.matrice2, m=self.m2)
-        print("x2, center2 = feat_trans_dgcnn(point_input=x1, kernel=self.matrice2, m=self.m2)")
-        print(f"x2 shape: {x2.shape}")
-        print(f"center2 shape: {center2.shape}")
         score2 = self.scorenet2(xyz, calc_scores=self.calc_scores, bias=0)
         """assemble with scores:"""
         x = assemble_dgcnn(score=score2, point_input=x2, center_input=center2, knn_idx=idx, aggregate='sum')
         x2 = F.relu(self.bn2(x))
-        print(f"x2 = F.relu(self.bn2(x))  shape: {x2.shape}")
 
         x3, center3 = feat_trans_dgcnn(point_input=x2, kernel=self.matrice3, m=self.m3)
-        print("x3, center3 = feat_trans_dgcnn(point_input=x2, kernel=self.matrice3, m=self.m3)")
-        print(f"x3 shape: {x3.shape}")
-        print(f"center3 shape: {center3.shape}")
         score3 = self.scorenet3(xyz, calc_scores=self.calc_scores, bias=0)
         x = assemble_dgcnn(score=score3, point_input=x3, center_input=center3, knn_idx=idx, aggregate='sum')
         x3 = F.relu(self.bn3(x))
-        print(f"x3 = F.relu(self.bn3(x))  shape: {x3.shape}")
 
         x4, center4 = feat_trans_dgcnn(point_input=x3, kernel=self.matrice4, m=self.m4)
-        print("x4, center4 = feat_trans_dgcnn(point_input=x3, kernel=self.matrice4, m=self.m4)")
-        print(f"x4 shape: {x4.shape}")
-        print(f"center4 shape: {center4.shape}")
         score4 = self.scorenet4(xyz, calc_scores=self.calc_scores, bias=0)
         x = assemble_dgcnn(score=score4, point_input=x4, center_input=center4, knn_idx=idx, aggregate='sum')
         x4 = F.relu(self.bn4(x))
-        print(f"x4 = F.relu(self.bn4(x))  shape: {x4.shape}")
 
         x5, center5 = feat_trans_dgcnn(point_input=x4, kernel=self.matrice5, m=self.m5)
-        print("x5, center5 = feat_trans_dgcnn(point_input=x4, kernel=self.matrice5, m=self.m5)")
-        print(f"x5 shape: {x5.shape}")
-        print(f"center5 shape: {center5.shape}")
         score5 = self.scorenet5(xyz, calc_scores=self.calc_scores, bias=0)
         x = assemble_dgcnn(score=score5, point_input=x5, center_input=center5, knn_idx=idx, aggregate='sum')
         x5 = F.relu(self.bn5(x))
-        print(f"x5 = F.relu(self.bn5(x)) shape: {x5.shape}")
         ###############
         xx = torch.cat((x1, x2, x3, x4, x5), dim=1)
-        print(f"xx = torch.cat((x1, x2, x3, x4, x5), dim=1) shape: {xx.shape}")
 
         xc = F.relu(self.convt(xx))
         xc = F.adaptive_max_pool1d(xc, 1).view(B, -1)
-        print(f"xc = F.adaptive_max_pool1d(xc, 1).view(B, -1) shape: {xc.shape}")
 
         cls_label = cls_label.view(B, 16, 1)
         cls_label = F.relu(self.convc(cls_label))
-        print(f"cls_label = F.relu(self.convc(cls_label))  shape: {cls_label.shape}")
         cls = torch.cat((xc.view(B, 1024, 1), cls_label), dim=1)
         cls = cls.repeat(1, 1, N)  # B,1088,N
-        print(f"cls = cls.repeat(1, 1, N)  shape: {cls.shape}")
 
         x = torch.cat((xx, cls), dim=1)  # 1088+64*3
-        print(f"x = torch.cat((xx, cls), dim=1) shape: {x.shape}")
         x = F.relu(self.conv6(x))
         x = self.dp1(x)
         x = F.relu(self.conv7(x))
@@ -150,7 +127,6 @@ class PAConv(nn.Module):
         x = self.conv9(x)
         x = F.log_softmax(x, dim=1)
         x = x.permute(0, 2, 1)  # b,n,50
-        print(f"x = x.permute(0, 2, 1) shape: {x.shape}")
 
         if gt is not None:
             return x, F.nll_loss(x.contiguous().view(-1, self.num_part), gt.view(-1, 1)[:, 0])
