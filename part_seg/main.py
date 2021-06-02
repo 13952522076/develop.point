@@ -37,15 +37,17 @@ def get_parser():
     parser.add_argument('--use_sgd', action='store_true', default=False)
     parser.add_argument('--lr', default=0.003, type=float, help='learning rate in training')
     parser.add_argument('--momentum', default=0.9, type=float)
+    parser.add_argument('--weight_decay', type=float, default=0, help='decay rate')
+
     parser.add_argument('--scheduler', type=str, default="step")
     parser.add_argument('--no_cuda', action='store_true', default=False)
     parser.add_argument('--cuda', action='store_true', default=True)
     parser.add_argument('--eval', action='store_true', default=False)
     parser.add_argument('--step', default=40, type=int)
-    parser.add_argument('--weight_decay', type=float, default=0, help='decay rate')
     parser.add_argument('--manual_seed', default=0, type=int)
     parser.add_argument('--pretrain', action='store_true', default=False)
-    
+    parser.add_argument('--model_type', type=str, default="insiou", choices=["insiou", "clsiou", "acc"])
+
     args = parser.parse_args()
     return args
 
