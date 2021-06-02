@@ -107,7 +107,7 @@ def train(args, io):
     print("Let's use", torch.cuda.device_count(), "GPUs!")
 
     '''Use Pretrain or not'''
-    if args.get('pretrain', False):
+    if args.pretrain:
         state_dict = torch.load("checkpoints/%s/best_insiou_model.pth" % args.exp_name,
                                 map_location=torch.device('cpu'))['model']
         for k in state_dict.keys():
