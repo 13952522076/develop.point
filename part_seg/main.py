@@ -44,7 +44,8 @@ def get_parser():
     parser.add_argument('--step', default=40, type=int)
     parser.add_argument('--weight_decay', type=float, default=0, help='decay rate')
     parser.add_argument('--manual_seed', default=0, type=int)
-
+    parser.add_argument('--pretrain', action='store_true', default=False)
+    
     args = parser.parse_args()
     return args
 
