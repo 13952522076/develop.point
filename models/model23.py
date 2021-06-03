@@ -409,6 +409,12 @@ def model23J(num_classes=40, **kwargs) -> Model23:  # 24999MiB
                  reducers=[4,2,2,2], **kwargs)
 
 
+# Also Eextremely large model, 101 layers in total.
+def model23K(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[10,10], pos_blocks=[10,10], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
 
 if __name__ == '__main__':
     data = torch.rand(2,128,10)
