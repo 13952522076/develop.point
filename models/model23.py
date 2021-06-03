@@ -356,37 +356,37 @@ class Model23(nn.Module):
 
 
 
-def model23A(num_classes=40, **kwargs) -> Model23:
+def model23A(num_classes=40, **kwargs) -> Model23:  # 19201MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model23B(num_classes=40, **kwargs) -> Model23:
+def model23B(num_classes=40, **kwargs) -> Model23: # 19185MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[1,1], pos_blocks=[1,1], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model23C(num_classes=40, **kwargs) -> Model23:
+def model23C(num_classes=40, **kwargs) -> Model23:  # 19537MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
                  reducers=[4,2,2], **kwargs)
 
-def model23D(num_classes=40, **kwargs) -> Model23:
+def model23D(num_classes=40, **kwargs) -> Model23:  # 31927MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,32,32],
                  reducers=[2,2,2], **kwargs)
 
-def model23E(num_classes=40, **kwargs) -> Model23:
+def model23E(num_classes=40, **kwargs) -> Model23:  # 19215MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[3,3], pos_blocks=[3,3], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model23F(num_classes=40, **kwargs) -> Model23:
+def model23F(num_classes=40, **kwargs) -> Model23:  # 6437MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[16,16],
                  reducers=[4,4], **kwargs)
 
-def model23G(num_classes=40, **kwargs) -> Model23:
+def model23G(num_classes=40, **kwargs) -> Model23:  # 19201MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[24,24],
                  reducers=[4,4], **kwargs)
@@ -397,13 +397,13 @@ def model23H(num_classes=40, **kwargs) -> Model23:
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
-def model23I(num_classes=40, **kwargs) -> Model23:
+def model23I(num_classes=40, **kwargs) -> Model23:  # 20283MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=256,
                  pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
 
 # Extremely large model, 101 layers in total.
-def model23J(num_classes=40, **kwargs) -> Model23:
+def model23J(num_classes=40, **kwargs) -> Model23:  # 24999MiB
     return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[4,4,4,4], pos_blocks=[4,4,4,4], k_neighbors=[16,16,16,16],
                  reducers=[4,2,2,2], **kwargs)
