@@ -1,4 +1,5 @@
 """
+Exactly equals to Model21 (the best results so far), but differnt configurations.
 Exactly based on Model10, but ReLU to GeLU
 Based on Model8, add dropout and max, avg combine.
 Based on Local model, add residual connections.
@@ -160,7 +161,6 @@ class FCBNReLU1D(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-
 class FCBNReLU1DRes(nn.Module):
     def __init__(self, channel, kernel_size=1, bias=False):
         super(FCBNReLU1DRes, self).__init__()
@@ -174,7 +174,6 @@ class FCBNReLU1DRes(nn.Module):
 
     def forward(self, x):
         return F.gelu(self.net(x)+x)
-
 
 class Attention(nn.Module):
     def __init__(self, dim, heads = 8, dim_head = 32, dropout = 0.):
@@ -208,6 +207,7 @@ class Attention(nn.Module):
         return self.to_out(out)
 
 
+
 class TransformerBlock(nn.Module):
     def __init__(self, dim, heads=8, dim_head=32, **kwargs):
         """
@@ -237,6 +237,11 @@ class TransformerBlock(nn.Module):
         return out
 
 
+
+
+
+
+
 class PreExtraction(nn.Module):
     def __init__(self, channels, blocks=1):
         """
@@ -263,7 +268,6 @@ class PreExtraction(nn.Module):
         x = x.reshape(b, n, -1).permute(0, 2, 1)
         return x
 
-
 class PosExtraction(nn.Module):
     def __init__(self, channels, blocks=1):
         """
@@ -284,68 +288,13 @@ class PosExtraction(nn.Module):
         return self.transformer(self.operation(x))
 
 
-class FeaturePropagation(nn.Module):
-    def __init__(self, in_channel, out_channel, blocks=1):
-        super(FeaturePropagation, self).__init__()
-        self.mlp_convs = nn.ModuleList()
-        self.mlp_bns = nn.ModuleList()
-        self.fuse = nn.Sequential(
-            nn.Conv1d(in_channel, out_channel,1, bias=False),
-            nn.BatchNorm1d(out_channel),
-            nn.GELU()
-        )
-        self.extraction=nn.ModuleList()
-        for i in range(blocks):
-            self.extraction.append(FCBNReLU1DRes(out_channel))
-
-
-
-    def forward(self, xyz1, xyz2, points1, points2):
-        """
-        Input:
-            xyz1: input points position data, [B, N, 3]
-            xyz2: sampled input points position data, [B, S, 3]
-            points1: input points data, [B, D, N]
-            points2: input points data, [B, D, S]
-        Return:
-            new_points: upsampled points data, [B, D', N]
-        """
-
-        points2 = points2.permute(0, 2, 1)
-        B, N, C = xyz1.shape
-        _, S, _ = xyz2.shape
-
-        if S == 1:
-            interpolated_points = points2.repeat(1, N, 1)
-        else:
-            dists = square_distance(xyz1, xyz2)
-            dists, idx = dists.sort(dim=-1)
-            dists, idx = dists[:, :, :3], idx[:, :, :3]  # [B, N, 3]
-
-            dist_recip = 1.0 / (dists + 1e-8)
-            norm = torch.sum(dist_recip, dim=2, keepdim=True)
-            weight = dist_recip / norm
-            interpolated_points = torch.sum(index_points(points2, idx) * weight.view(B, N, 3, 1), dim=2)
-
-        if points1 is not None:
-            points1 = points1.permute(0, 2, 1)
-            new_points = torch.cat([points1, interpolated_points], dim=-1)
-        else:
-            new_points = interpolated_points
-
-        new_points = new_points.permute(0, 2, 1)
-        new_points = self.fuse(new_points)
-        new_points = self.extraction(new_points)
-        return new_points
-
-
-class Model21(nn.Module):
-    def __init__(self, num_part=50, points=2048, embed_dim=128,
-                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
-                 reducers=[4,4], **kwargs):
-        super(Model21, self).__init__()
+class Model23(nn.Module):
+    def __init__(self, points=1024, class_num=40, embed_dim=64,
+                 pre_blocks=[2,2,2,2], pos_blocks=[2,2,2,2], k_neighbors=[32,32,32,32],
+                 reducers=[2,2,2,2], **kwargs):
+        super(Model23, self).__init__()
         self.stages = len(pre_blocks)
-        self.num_part = num_part
+        self.class_num = class_num
         self.points=points
         self.embedding = nn.Sequential(
             FCBNReLU1D(3, embed_dim),
@@ -358,7 +307,6 @@ class Model21(nn.Module):
         self.pos_blocks_list = nn.ModuleList()
         last_channel = embed_dim
         anchor_points = self.points
-
         for i in range(len(pre_blocks)):
             out_channel = last_channel*2
             pre_block_num=pre_blocks[i]
@@ -388,10 +336,10 @@ class Model21(nn.Module):
             nn.BatchNorm1d(256),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(256, self.num_part)
+            nn.Linear(256, self.class_num)
         )
 
-    def forward(self, x, cls_label, gt=None):
+    def forward(self, x):
         xyz = x.permute(0, 2, 1)
         batch_size, _, _ = x.size()
         x = self.embedding(x) # B,D,N
@@ -407,10 +355,60 @@ class Model21(nn.Module):
         return x
 
 
-def model21H(num_classes=40, **kwargs) -> Model21:
-    return Model21(points=1024, class_num=num_classes, embed_dim=128,
+
+def model23A(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
+def model23B(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[1,1], pos_blocks=[1,1], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
+def model23C(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[32,32,32],
+                 reducers=[4,2,2], **kwargs)
+
+def model23D(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[2,2,2], pos_blocks=[2,2,2], k_neighbors=[16,32,32],
+                 reducers=[2,2,2], **kwargs)
+
+def model23E(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[3,3], pos_blocks=[3,3], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
+def model23F(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[16,16],
+                 reducers=[4,4], **kwargs)
+
+def model23G(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[24,24],
+                 reducers=[4,4], **kwargs)
+
+# don't train H,  it is same to model21H
+def model23H(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
                  pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
                  reducers=[4,4], **kwargs)
+
+def model23I(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=256,
+                 pre_blocks=[2,2], pos_blocks=[2,2], k_neighbors=[32,32],
+                 reducers=[4,4], **kwargs)
+
+# Extremely large model, 101 layers in total.
+def model23J(num_classes=40, **kwargs) -> Model23:
+    return Model23(points=1024, class_num=num_classes, embed_dim=128,
+                 pre_blocks=[4,4,4,4], pos_blocks=[4,4,4,4], k_neighbors=[16,16,16,16],
+                 reducers=[4,2,2,2], **kwargs)
+
+
 
 if __name__ == '__main__':
     data = torch.rand(2,128,10)
@@ -434,11 +432,11 @@ if __name__ == '__main__':
 
     data = torch.rand(2, 3, 1024)
     print("===> testing model ...")
-    model = Model21()
+    model = Model23()
     out = model(data)
     print(out.shape)
 
     print("===> testing modelE ...")
-    model = model21E()
+    model = model23E()
     out = model(data)
     print(out.shape)
