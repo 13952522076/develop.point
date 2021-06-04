@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import einsum
 from einops import rearrange, repeat
-from pointnet2_ops import pointnet2_utils
+# from pointnet2_ops import pointnet2_utils
 
 def square_distance(src, dst):
     """
@@ -132,8 +132,8 @@ class LocalGrouper(nn.Module):
         S = self.groups
         xyz = xyz.contiguous()  # xyz [btach, points, xyz]
 
-        # fps_idx = farthest_point_sample(xyz, self.groups).long()
-        fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
+        fps_idx = farthest_point_sample(xyz, self.groups).long()
+        # fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
         new_xyz = index_points(xyz, fps_idx)
         new_points = index_points(points, fps_idx)
 
@@ -287,17 +287,15 @@ class PosExtraction(nn.Module):
 class FeaturePropagation(nn.Module):
     def __init__(self, in_channel, out_channel, blocks=1):
         super(FeaturePropagation, self).__init__()
-        self.mlp_convs = nn.ModuleList()
-        self.mlp_bns = nn.ModuleList()
         self.fuse = nn.Sequential(
             nn.Conv1d(in_channel, out_channel,1, bias=False),
             nn.BatchNorm1d(out_channel),
             nn.GELU()
         )
-        self.extraction=nn.ModuleList()
+        layers= []
         for i in range(blocks):
-            self.extraction.append(FCBNReLU1DRes(out_channel))
-
+            layers.append(FCBNReLU1DRes(out_channel))
+        self.extraction = nn.Sequential(*layers)
 
 
     def forward(self, xyz1, xyz2, points1, points2):
@@ -341,7 +339,7 @@ class FeaturePropagation(nn.Module):
 
 class Model21(nn.Module):
     def __init__(self, num_part=50, points=2048, embed_dim=128,
-                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32],
+                 pre_blocks=[4,4], pos_blocks=[4,4], k_neighbors=[32,32], back_blocks=[2,2],
                  reducers=[4,4], **kwargs):
         super(Model21, self).__init__()
         self.stages = len(pre_blocks)
@@ -359,6 +357,7 @@ class Model21(nn.Module):
         last_channel = embed_dim
         anchor_points = self.points
 
+        channel_list = [embed_dim]
         for i in range(len(pre_blocks)):
             out_channel = last_channel*2
             pre_block_num=pre_blocks[i]
@@ -366,7 +365,6 @@ class Model21(nn.Module):
             kneighbor = k_neighbors[i]
             reduce = reducers[i]
             anchor_points = anchor_points//reduce
-
             # append local_grouper_list
             local_grouper = LocalGrouper(anchor_points, kneighbor) #[b,g,k,d]
             self.local_grouper_list.append(local_grouper)
@@ -376,35 +374,95 @@ class Model21(nn.Module):
             # append pos_block_list
             pos_block_module = PosExtraction(out_channel, pos_block_num)
             self.pos_blocks_list.append(pos_block_module)
-
             last_channel = out_channel
+            channel_list.append(last_channel)
+
+        channel_list.reverse()  # reverse, from last channel to first channel
+        self.channel_list = channel_list
+
+        self.cls_label_embedding = nn.Sequential(
+            nn.Conv1d(16,64,1,bias=False),
+            nn.BatchNorm1d(64, momentum=0.1),
+            nn.GELU(),
+            nn.Conv1d(64, 64, 1, bias=False),
+            nn.BatchNorm1d(64, momentum=0.1),
+            nn.GELU()
+        )
+
+        self.extra_info = nn.Sequential(
+            nn.Conv1d(last_channel+64, 256, 1, bias=False),
+            nn.BatchNorm1d(256, momentum=0.1),
+            nn.GELU(),
+            nn.Conv1d(256, 64, 1, bias=False),
+            nn.BatchNorm1d(64, momentum=0.1),
+            nn.GELU()
+        )
+
+        self.back_block_list = nn.ModuleList()
+        last_channel = self.channel_list[0]
+        for i in range(len(pre_blocks)):
+            self.back_block_list.append(
+                FeaturePropagation(
+                    last_channel+self.channel_list[i+1]+64, self.channel_list[i], back_blocks[i]
+                )
+            )
+            last_channel = self.channel_list[i]
+
+
 
         self.classifier = nn.Sequential(
-            nn.Linear(last_channel*2, 512),
-            nn.BatchNorm1d(512),
+            nn.Conv1d(last_channel, last_channel, 1),
+            nn.BatchNorm1d(last_channel),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
+            nn.Conv1d(last_channel, last_channel//2, 1),
+            nn.BatchNorm1d(last_channel//2),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(256, self.num_part)
+            nn.Conv1d(last_channel//2, self.num_part, 1)
         )
 
     def forward(self, x, cls_label, gt=None):
         xyz = x.permute(0, 2, 1)
         batch_size, _, _ = x.size()
         x = self.embedding(x) # B,D,N
+
+        fea_list = [x]
+        xyz_list = [xyz]
+
         for i in range(self.stages):
             xyz, x = self.local_grouper_list[i](xyz, x.permute(0, 2, 1))   # [b,g,3]  [b,g,k,d]
             x = self.pre_blocks_list[i](x)  # [b,d,g]
             x = self.pos_blocks_list[i](x)  # [b,d,g]
+            fea_list.append(x)
+            xyz_list.append(xyz)
 
-        x_max = F.adaptive_max_pool1d(x,1).squeeze(dim=-1)
-        x_mean = x.mean(dim=-1,keepdim=False)
-        x = torch.cat([x_max, x_mean], dim=-1)
-        x = self.classifier(x)
-        return x
+        fea_list.reverse()  # [b, d, p]
+        xyz_list.reverse()  # [b, p, 3]
+
+        global_fea = F.adaptive_max_pool1d(x,1)  # [b, d, 1]
+        cls_label = cls_label.view(batch_size, 16, 1)
+        cls_label = self.cls_label_embedding(cls_label)
+        extra_info = torch.cat([global_fea, cls_label], dim=1)
+        extra_info = self.extra_info(extra_info)
+        # print(f"extra_info shape: {extra_info.shape}")
+
+        xyz_deeper, fea_deeper = xyz_list[0], fea_list[0]
+        for i in range(self.stages):
+            xyz_shallower, fea_shallower = xyz_list[i+1], fea_list[i+1]
+            _, _, samples = fea_shallower.shape
+            fea_shallower = torch.cat([fea_shallower, extra_info.repeat(1,1,samples)],dim=1)
+            fea_deeper = self.back_block_list[i](xyz_shallower, xyz_deeper, fea_shallower, fea_deeper)
+            xyz_deeper = xyz_shallower
+
+        out = self.classifier(fea_deeper)
+        out = F.log_softmax(out, dim=1)
+        out = out.permute(0, 2, 1)  # b,n,50
+
+        if gt is not None:
+            return out, F.nll_loss(out.contiguous().view(-1, self.num_part), gt.view(-1, 1)[:, 0])
+        else:
+            return out
 
 
 def model21H(num_classes=40, **kwargs) -> Model21:
@@ -433,12 +491,14 @@ if __name__ == '__main__':
 
 
     data = torch.rand(2, 3, 1024)
+    cls_label = torch.rand(2,16)
     print("===> testing model ...")
     model = Model21()
-    out = model(data)
+    out = model(data,cls_label)
     print(out.shape)
 
-    print("===> testing modelE ...")
-    model = model21E()
-    out = model(data)
+    model = model21H()
+    out = model(data, cls_label)
     print(out.shape)
+
+
