@@ -422,7 +422,7 @@ class Model21(nn.Module):
             nn.Conv1d(last_channel//2, self.num_part, 1)
         )
 
-    def forward(self, x, cls_label, gt=None):
+    def forward(self, x, norm_plt, cls_label, gt=None):
         xyz = x.permute(0, 2, 1)
         batch_size, _, _ = x.size()
         x = self.embedding(x) # B,D,N
@@ -494,11 +494,11 @@ if __name__ == '__main__':
     cls_label = torch.rand(2,16)
     print("===> testing model ...")
     model = Model21()
-    out = model(data,cls_label)
+    out = model(data,None, cls_label)
     print(out.shape)
 
     model = model21H()
-    out = model(data, cls_label)
+    out = model(data, None, cls_label)
     print(out.shape)
 
 
