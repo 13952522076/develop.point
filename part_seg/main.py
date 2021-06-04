@@ -37,7 +37,7 @@ def get_parser():
     parser.add_argument('--use_sgd', action='store_true', default=False)
     parser.add_argument('--lr', default=0.003, type=float, help='learning rate in training')
     parser.add_argument('--momentum', default=0.9, type=float)
-    parser.add_argument('--weight_decay', type=float, default=0, help='decay rate')
+    parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
 
     parser.add_argument('--scheduler', type=str, default="step")
     parser.add_argument('--no_cuda', action='store_true', default=False)

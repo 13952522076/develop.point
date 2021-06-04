@@ -41,7 +41,6 @@ def parse_args():
     parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
     parser.add_argument('--learning_rate', default=0.01, type=float, help='learning rate in training')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
-    parser.add_argument('--num_workers', default=16, type=int, help='number of epoch in training')
     # parser.add_argument('--use_normals', action='store_true', default=False, help='use normals besides x,y,z')
     # parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     # parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampling')
@@ -74,9 +73,9 @@ def main():
                           'Valid-Loss', 'Valid-acc-B', 'Valid-acc'])
 
     print('==> Preparing data..')
-    train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=args.num_workers,
+    train_loader = DataLoader(ModelNet40(partition='train', num_points=args.num_points), num_workers=8,
                               batch_size=args.batch_size, shuffle=True, drop_last=True)
-    test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=args.num_workers,
+    test_loader = DataLoader(ModelNet40(partition='test', num_points=args.num_points), num_workers=8,
                              batch_size=args.batch_size, shuffle=True, drop_last=False)
 
     # Model
