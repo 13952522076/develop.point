@@ -371,11 +371,11 @@ class get_model(nn.Module):
         )
 
         self.encoder_stage1 = encoder_stage(anchor_points=points//4, channel=128,
-                                            pre_blocks=1, pos_blocks=1, k_neighbor=32)
+                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
         self.encoder_stage2 = encoder_stage(anchor_points=points//16, channel=256,
-                                            pre_blocks=1, pos_blocks=1, k_neighbor=32)
+                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
         self.encoder_stage3 = encoder_stage(anchor_points=points // 32, channel=512,
-                                            pre_blocks=1, pos_blocks=1, k_neighbor=32)
+                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
 
         self.fp3 = PointNetFeaturePropagation(in_channel=(512+256)*2, mlp=[512, 512])
         self.fp2 = PointNetFeaturePropagation(in_channel=512+256, mlp=[256, 256])
