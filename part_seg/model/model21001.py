@@ -154,7 +154,7 @@ class FCBNReLU1D(nn.Module):
         self.net = nn.Sequential(
             nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(out_channels),
-            nn.GELU()
+            nn.ReLU(inplace=True)
         )
 
     def forward(self, x):
@@ -167,13 +167,13 @@ class FCBNReLU1DRes(nn.Module):
         self.net = nn.Sequential(
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel),
-            nn.GELU(),
+            nn.ReLU(inplace=True),
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel)
         )
 
     def forward(self, x):
-        return F.gelu(self.net(x)+x)
+        return F.relu(self.net(x)+x,inplace=True)
 
 
 class Attention(nn.Module):
@@ -231,9 +231,9 @@ class TransformerBlock(nn.Module):
         :return: [b batch,  d dimension, p points,]
         """
         att = self.attention(x)
-        att = F.gelu(att+x)
+        att = F.relu(att+x,inplace=True)
         out = self.ffn(att)
-        out = F.gelu(att+out)
+        out = F.relu(att+out, inplace=True)
         return out
 
 
@@ -290,7 +290,7 @@ class FeaturePropagation(nn.Module):
         self.fuse = nn.Sequential(
             nn.Conv1d(in_channel, out_channel,1, bias=False),
             nn.BatchNorm1d(out_channel),
-            nn.GELU()
+            nn.ReLU(inplace=True)
         )
         layers= []
         for i in range(blocks):
@@ -383,19 +383,19 @@ class Model21001(nn.Module):
         self.cls_label_embedding = nn.Sequential(
             nn.Conv1d(16,64,1,bias=False),
             nn.BatchNorm1d(64, momentum=0.1),
-            nn.GELU(),
+            nn.ReLU(inplace=True),
             nn.Conv1d(64, 64, 1, bias=False),
             nn.BatchNorm1d(64, momentum=0.1),
-            nn.GELU()
+            nn.ReLU(inplace=True)
         )
 
         self.extra_info = nn.Sequential(
             nn.Conv1d(last_channel+64, 256, 1, bias=False),
             nn.BatchNorm1d(256, momentum=0.1),
-            nn.GELU(),
+            nn.ReLU(inplace=True),
             nn.Conv1d(256, 64, 1, bias=False),
             nn.BatchNorm1d(64, momentum=0.1),
-            nn.GELU()
+            nn.ReLU(inplace=True)
         )
 
         self.back_block_list = nn.ModuleList()
@@ -413,11 +413,11 @@ class Model21001(nn.Module):
         self.classifier = nn.Sequential(
             nn.Conv1d(last_channel+64, last_channel, 1),
             nn.BatchNorm1d(last_channel),
-            nn.GELU(),
+            nn.ReLU(inplace=True),
             # nn.Dropout(0.5),
             nn.Conv1d(last_channel, last_channel//2, 1),
             nn.BatchNorm1d(last_channel//2),
-            nn.GELU(),
+            nn.ReLU(inplace=True),
             # nn.Dropout(0.5),
             nn.Conv1d(last_channel//2, self.num_part, 1)
         )
