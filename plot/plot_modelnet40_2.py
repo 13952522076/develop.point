@@ -11,15 +11,18 @@ from data import ModelNet40
 id = np.random.randint(0,2048)
 id=800 #airplane 11
 id=2001 # lighter
-id=1
-points=2048
-save_fig=False
+id=860
+color='lightskyblue'
+color='yellowgreen'
+color='orange'
+points=50
+save_fig=True
 rotation=True
 scale=True
 
 
 datset = ModelNet40(points, partition='test')
-sample,label = datset.__getitem__(15)
+sample,label = datset.__getitem__(id)
 
 
 
@@ -41,7 +44,7 @@ z_max = max(sequence_containing_z_vals)
 print(f"z range: {z_max-z_min}")
 
 
-ax.scatter(sequence_containing_x_vals, sequence_containing_y_vals, sequence_containing_z_vals)
+ax.scatter(sequence_containing_x_vals, sequence_containing_y_vals, sequence_containing_z_vals, color = color)
 
 
 # make the panes transparent
