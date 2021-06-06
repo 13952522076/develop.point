@@ -1,7 +1,7 @@
 """
 Author: Benny
 Date: Nov 2019
-python train.py --model model10 --normal --log_dir model10
+nohup python train.py --model model21A --normal --log_dir model21A > nohup/model21A.out &
 """
 import argparse
 import os
