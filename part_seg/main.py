@@ -67,8 +67,8 @@ def _init_():
         os.system('cp util/data_util.py checkpoints' + '/' + args.exp_name + '/' + 'data_util.py.backup')
         # os.system('cp DGCNN_PAConv.py checkpoints' + '/' + args.exp_name + '/' + 'DGCNN_PAConv.py.backup')
 
-    global writer
-    writer = SummaryWriter('checkpoints/' + args.exp_name)
+    # global writer
+    # writer = SummaryWriter('checkpoints/' + args.exp_name)
 
 
 def weight_init(m):
@@ -273,9 +273,9 @@ def train_epoch(train_loader, model, opt, scheduler, epoch, num_part, num_classe
                                                                        metrics['accuracy'], metrics['shape_avg_iou'])
     io.cprint(outstr)
     # Write to tensorboard
-    writer.add_scalar('loss_train', train_loss * 1.0 / count, epoch + 1)
-    writer.add_scalar('Acc_train', metrics['accuracy'], epoch + 1)
-    writer.add_scalar('ins_iou', metrics['shape_avg_iou'])
+    # writer.add_scalar('loss_train', train_loss * 1.0 / count, epoch + 1)
+    # writer.add_scalar('Acc_train', metrics['accuracy'], epoch + 1)
+    # writer.add_scalar('ins_iou', metrics['shape_avg_iou'])
 
 
 def test_epoch(test_loader, model, epoch, num_part, num_classes, io):
@@ -339,9 +339,9 @@ def test_epoch(test_loader, model, epoch, num_part, num_classes, io):
 
     io.cprint(outstr)
     # Write to tensorboard
-    writer.add_scalar('loss_train', test_loss * 1.0 / count, epoch + 1)
-    writer.add_scalar('Acc_train', metrics['accuracy'], epoch + 1)
-    writer.add_scalar('ins_iou', metrics['shape_avg_iou'])
+    # writer.add_scalar('loss_train', test_loss * 1.0 / count, epoch + 1)
+    # writer.add_scalar('Acc_train', metrics['accuracy'], epoch + 1)
+    # writer.add_scalar('ins_iou', metrics['shape_avg_iou'])
 
     return metrics, final_total_per_cat_iou
 
