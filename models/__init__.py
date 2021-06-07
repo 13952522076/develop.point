@@ -54,6 +54,9 @@ from .model18 import model18A1, model18A2, model18A3
 from .model19 import model19A, model19B
 from .model20 import model20A, model20B
 from .model21 import model21A, model21B, model21C, model21D, model21G, model21H
+
+from .plot21 import plot21H
+
 from .model22 import model22A,model22B, model22C, model22D, model22G, model22H
 from .model23 import model23A, model23B, model23C, model23D, model23E, model23F, model23G, model23I, model23J, model23K
 from .model24 import model24A, model24B, model24C, model24D, model24E, model24F, model24G, model24H

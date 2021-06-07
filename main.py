@@ -41,7 +41,7 @@ def parse_args():
     parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
     parser.add_argument('--learning_rate', default=0.01, type=float, help='learning rate in training')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='decay rate')
-    parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
+    parser.add_argument('--seed', type=int, help='random seed')
     return parser.parse_args()
 
 
@@ -49,10 +49,12 @@ def main():
     args = parse_args()
     print(f"args: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
-    torch.manual_seed(args.seed)
+    if args.seed is not None:
+        torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         device = 'cuda'
-        torch.cuda.manual_seed(args.seed)
+        if args.seed is not None:
+            torch.cuda.manual_seed(args.seed)
     else:
         device = 'cpu'
     print(f"==> Using device: {device}")
