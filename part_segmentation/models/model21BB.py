@@ -172,7 +172,7 @@ class FCBNReLU1DRes(nn.Module):
         )
 
     def forward(self, x):
-        return F.GELU(self.net(x)+x)
+        return F.gelu(self.net(x)+x)
 
 
 class Attention(nn.Module):
