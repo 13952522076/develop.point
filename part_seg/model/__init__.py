@@ -3,3 +3,4 @@ from __future__ import absolute_import
 from .DGCNN_PAConv import PAConv
 from .model21 import model21H
 from .model21001 import model21001H
+from .modelA import ModelA
