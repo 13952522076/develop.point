@@ -153,7 +153,7 @@ class FCBNReLU1D(nn.Module):
         self.net = nn.Sequential(
             nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(out_channels),
-            nn.ReLU(inplace=True)
+            nn.GELU()
         )
 
     def forward(self, x):
@@ -166,13 +166,13 @@ class FCBNReLU1DRes(nn.Module):
         self.net = nn.Sequential(
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel),
-            nn.ReLU(inplace=True),
+            nn.GELU(),
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel)
         )
 
     def forward(self, x):
-        return F.relu(self.net(x)+x, inplace=True)
+        return F.gelu(self.net(x)+x)
 
 
 class Attention(nn.Module):
@@ -230,9 +230,9 @@ class TransformerBlock(nn.Module):
         :return: [b batch,  d dimension, p points,]
         """
         att = self.attention(x)
-        att = F.relu(att+x, inplace=True)
+        att = F.gelu(att+x)
         out = self.ffn(att)
-        out = F.relu(att+out, inplace=True)
+        out = F.gelu(att+out)
         return out
 
 
@@ -350,7 +350,7 @@ class PointNetFeaturePropagation(nn.Module):
         new_points = new_points.permute(0, 2, 1)
         for i, conv in enumerate(self.mlp_convs):
             bn = self.mlp_bns[i]
-            new_points = F.relu(bn(conv(new_points)), inplace=True)
+            new_points = F.gelu(bn(conv(new_points)))
         return new_points
 
 
@@ -402,7 +402,7 @@ class ModelA(nn.Module):
         l0_points = self.fp1(xyz, xyz_1, torch.cat([cls_label_one_hot, xyz.permute(0, 2, 1), points_0], 1), l1_points)
 
         # FC layers
-        feat = F.relu(self.bn1(self.conv1(l0_points)),inplace=True)
+        feat = F.gelu(self.bn1(self.conv1(l0_points)))
         x = self.drop1(feat)
         x = self.conv2(x)
         x = F.log_softmax(x, dim=1)
