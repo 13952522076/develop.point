@@ -74,7 +74,7 @@ def main(args):
 
     '''CREATE DIR'''
     timestr = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
-    exp_dir = Path('./log/')
+    exp_dir = Path('./checkpoints/')
     exp_dir.mkdir(exist_ok=True)
     # exp_dir = exp_dir.joinpath('part_seg')
     exp_dir.mkdir(exist_ok=True)
