@@ -153,7 +153,7 @@ def main(args):
             weight_decay=args.decay_rate
         )
     else:
-        optimizer = torch.optim.SGD(classifier.parameters(), lr=args.learning_rate, momentum=0.9)
+        optimizer = torch.optim.SGD(classifier.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=args.decay_rate)
 
     def bn_momentum_adjust(m, momentum):
         if isinstance(m, torch.nn.BatchNorm2d) or isinstance(m, torch.nn.BatchNorm1d):
@@ -170,6 +170,9 @@ def main(args):
     best_inctance_avg_iou = 0
 
     for epoch in range(start_epoch, args.epoch):
+        train_loss = 0
+        time_cost = datetime.datetime.now()
+
         mean_correct = []
 
         log_string('Epoch %d (%d/%s):' % (global_epoch + 1, epoch + 1, args.epoch))
@@ -206,9 +209,14 @@ def main(args):
             loss = criterion(seg_pred, target, trans_feat)
             loss.backward()
             optimizer.step()
+            train_loss += loss.item()
 
+        train_loss = train_loss / (i + 1)
         train_instance_acc = np.mean(mean_correct)
         log_string('Train accuracy is: %.5f' % train_instance_acc)
+        log_string('Train loss is: %.5f' % train_loss)
+        time_cost = int((datetime.datetime.now() - time_cost).total_seconds())
+        log_string('Train time is: %.1f seconds' % time_cost)
 
         with torch.no_grad():
             test_metrics = {}
