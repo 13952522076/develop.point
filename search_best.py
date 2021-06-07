@@ -54,7 +54,7 @@ foldsList = os.listdir(args.checkpoint)
 assert len(foldsList) > 0, f"no folders found in current path: {args.checkpoint}"
 modellist = []
 for folder in foldsList:
-    if folder.startwith(args.model):
+    if folder.startswith(args.model):
         modellist.append(folder)
 print(modellist)
 print(f"found ")
