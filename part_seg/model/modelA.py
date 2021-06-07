@@ -357,12 +357,12 @@ class PointNetFeaturePropagation(nn.Module):
 
 
 class ModelA(nn.Module):
-    def __init__(self, num_classes=40,points=2048, embed_dim=128, normal_channel=False,
+    def __init__(self, num_part=50,points=2048, embed_dim=128, normal_channel=False,
                  pre_blocks=[2,2,2,2], pos_blocks=[2,2,2,2], k_neighbors=[32,32,32,32],
                  reducers=[2,2,2,2], **kwargs):
         super(ModelA, self).__init__()
         self.stages = len(pre_blocks)
-        self.num_classes = num_classes
+        self.num_part = num_part
         self.points=points
         input_channel=6 if normal_channel else 3
         self.embedding = nn.Sequential(
@@ -384,7 +384,7 @@ class ModelA(nn.Module):
         self.conv1 = nn.Conv1d(128, 128, 1)
         self.bn1 = nn.BatchNorm1d(128)
         self.drop1 = nn.Dropout(0.5)
-        self.conv2 = nn.Conv1d(128, num_classes, 1)
+        self.conv2 = nn.Conv1d(128, num_part, 1)
 
     def forward(self, x, norm_plt,  cls_label, gt=None):
         points_0 = x
