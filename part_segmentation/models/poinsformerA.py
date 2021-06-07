@@ -1,10 +1,5 @@
 """
-Based on Model8, add dropout and max, avg combine.
-Based on Local model, add residual connections.
-The extraction is doubled for depth.
-
-Learning Point Cloud with Progressively Local representation.
-[B,3,N] - {[B,G,K,d]-[B,G,d]}  - {[B,G',K,d]-[B,G',d]} -cls
+Model21+Pointnet part segment
 """
 import torch
 import torch.nn as nn
