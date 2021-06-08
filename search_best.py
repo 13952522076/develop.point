@@ -56,8 +56,18 @@ modellist = []
 for folder in foldsList:
     if folder.startswith(args.model):
         modellist.append(folder)
-print(modellist)
-print(f"found ")
+assert len(modellist) > 0, f"no model folders found"
+print(f"Found {len(modellist)} pretrained model folders.")
+
+best_acc_mean = 0.0
+best_acc_all = 0.0
+best_acc_mean_model_path = ""
+best_acc_all_model_path = ""
+for model_path in modellist:
+    model_path = os.path.join(args.checkpoint, model_path)
+    log_path = os.path.join(model_path, "log.txt")
+    logs = np.loadtxt(log_path, skiprows=1)
+    print(logs)
 
 
 
