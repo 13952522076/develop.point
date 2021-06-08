@@ -101,7 +101,7 @@ def main(args):
     log_string('PARAMETER ...')
     log_string(args)
 
-    root = 'data/shapenetcore_partanno_segmentation_benchmark_v0_normal/'
+    root = 'data/shapenetcore_partanno_segmentation_benchmark_v0_normal'
     if args.index is not None:
         root = root+'_'+args.index+'/'
 
