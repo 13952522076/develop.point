@@ -67,7 +67,7 @@ for model_path in modellist:
     model_path = os.path.join(args.checkpoint, model_path)
     log_path = os.path.join(model_path, "log.txt")
     logs = np.loadtxt(log_path, skiprows=1)
-    print(logs)
+    print(logs.shape)
 
 
 
