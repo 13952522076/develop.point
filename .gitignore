@@ -1,4 +1,4 @@
 .idea
 __pycache__/
 *.pdf
-data/
+data/modelnet40_ply_hdf5_2048/
