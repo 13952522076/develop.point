@@ -75,7 +75,7 @@ for model_path in modellist:
 
     if acc_all>best_acc_all:
         best_acc_all = acc_all
-        best_acc_all_model_path = best_acc_all
+        best_acc_all_model_path = model_path
 
 print(f"Best mean accuracy is: {best_acc_mean} | [{best_acc_mean_model_path}]")
 print(f"Best all  accuracy is: {best_acc_all} | [{best_acc_all_model_path}]")
