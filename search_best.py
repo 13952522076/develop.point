@@ -67,7 +67,10 @@ for model_path in modellist:
     model_path = os.path.join(args.checkpoint, model_path)
     log_path = os.path.join(model_path, "log.txt")
     logs = np.loadtxt(log_path, skiprows=1)
-    print(logs.shape)
+    acc_mean = max(logs[:,-2])
+    acc_all  = max(logs[:, -1])
+
+    print(f"{acc_mean}-{acc_all}")
 
 
 
