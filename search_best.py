@@ -7,24 +7,8 @@ nohup python classify.py --model new1A > new_nohup/PCTNEW.out &
 """
 import argparse
 import os
-import datetime
-import torch
-import torch.nn.parallel
-import torch.backends.cudnn as cudnn
-import torch.optim
-import torch.utils.data
-import torch.utils.data.distributed
-from torch.utils.data import DataLoader
-import models as models
-from utils import Logger, mkdir_p, progress_bar, save_model, save_args
-from data import ModelNet40
-from torch.optim.lr_scheduler import CosineAnnealingLR
-import sklearn.metrics as metrics
-from helper import cal_loss
 import numpy as np
 
-model_names = sorted(name for name in models.__dict__
-                     if callable(models.__dict__[name]))
 
 
 
