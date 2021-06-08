@@ -68,9 +68,16 @@ for model_path in modellist:
     log_path = os.path.join(model_path, "log.txt")
     logs = np.loadtxt(log_path, skiprows=1)
     acc_mean = max(logs[:,-2])
-    acc_all  = max(logs[:, -1])
+    acc_all = max(logs[:, -1])
+    if acc_mean>best_acc_mean:
+        best_acc_mean = acc_mean
+        best_acc_mean_model_path = model_path
 
-    print(f"{acc_mean}-{acc_all}")
+    if acc_all>best_acc_all:
+        best_acc_all = acc_all
+        best_acc_all_model_path = best_acc_all
 
+print(f"Best mean accuracy is: {best_acc_mean} | [{best_acc_mean_model_path}]")
+print(f"Best all  accuracy is: {best_acc_all} | [{best_acc_all_model_path}]")
 
 
