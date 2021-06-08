@@ -13,7 +13,7 @@ DATA:
   num_point: 4096  # point number [default: 4096]
 
 TRAIN:
-  arch: pointnet2
+  arch: pointnet2_seg
   use_xyz: True
   sync_bn: True  # adopt sync_bn or not
   ignore_label: 255
