@@ -437,7 +437,7 @@ class get_model(nn.Module):
         x = F.log_softmax(x, dim=1)
         x = x.permute(0, 2, 1)
         if gt is not None:
-            return x, F.nll_loss(x.contiguous().view(-1, self.num_part), gt.view(-1, 1)[:, 0])
+            return x, F.nll_loss(x.contiguous().view(-1, self.num_classes), gt.view(-1, 1)[:, 0])
         else:
             return x
 
