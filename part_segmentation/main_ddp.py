@@ -61,6 +61,7 @@ def parse_args():
     # for ddp
     parser.add_argument('--sync_bn', action='store_true', default=True, help='sync_bn')
     parser.add_argument('--dist_url', type=str, default="tcp://127.0.0.1:6789")
+    parser.add_argument('--dist_backend', type=str, default="nccl")
     parser.add_argument('--multiprocessing_distributed', action='store_true', default=True)
     parser.add_argument('--world_size', type=int, default=1)
     parser.add_argument('--rank', type=int, default=0)
