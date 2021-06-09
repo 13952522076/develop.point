@@ -44,7 +44,7 @@ def compute_overall_iou_gpu(pred, target, num_classes):
 
             if F != 0:
                 iou = I / float(U)    #  iou across all points for this class
-                part_ious.append(iou)   #  append the iou of this class
+                part_ious.append(iou.data)   #  append the iou of this class
         shape_ious.append(np.mean(part_ious))   # each time append an average iou across all classes of this sample (sample_level!)
     return shape_ious   # [batch_size]
 
