@@ -449,7 +449,7 @@ if __name__ == "__main__":
         np.random.seed(args.manual_seed)
         torch.manual_seed(args.manual_seed)
 
-    args.cuda = not args.no_cuda and torch.cuda.is_available()
+    args.cuda = torch.cuda.is_available() and args.cuda
 
     if args.cuda:
         io.cprint('Using GPU')
