@@ -41,18 +41,18 @@ def parse_args():
     parser = argparse.ArgumentParser('Model')
     parser.add_argument('--model', type=str, default='pointnet_part_seg', help='model name')
     parser.add_argument('--batch_size', type=int, default=32, help='batch Size during training')
-    parser.add_argument('--epochs', default=250, type=int, help='epoch to run')
-    parser.add_argument('--learning_rate', default=0.003, type=float, help='initial learning rate')
+    parser.add_argument('--epochs', default=200, type=int, help='epoch to run')
+    parser.add_argument('--lr', default=0.003, type=float, help='initial learning rate')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD')
     parser.add_argument('--exp_name', type=str, default=None, help='log path')
     parser.add_argument('--scheduler', type=str, default="step", help='log path')
     parser.add_argument('--weight_decay', type=float, default=0, help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9, help='weight decay')
-    parser.add_argument('--npoint', type=int, default=2048, help='point Number')
-    parser.add_argument('--normal', action='store_true', default=False, help='use normals')
-    parser.add_argument('--step', type=int, default=20, help='decay step for lr decay')
+    parser.add_argument('--use_sgd', action='store_true', default=False, help='use_sgd')
+    parser.add_argument('--cuda', action='store_true', default=True, help='cuda')
+    parser.add_argument('--eval', action='store_true', default=False, help='eval')
+    parser.add_argument('--step', type=int, default=40, help='decay step for lr decay')
     parser.add_argument('--manual_seed', type=int, default=0, help='manual_seed')
-    parser.add_argument('--lr_decay', type=float, default=0.5, help='decay rate for lr decay')
     parser.add_argument('--model_type', type=str, default="insiou", help='choose to test the best insiou/clsiou/acc model')
     return parser.parse_args()
 
@@ -111,9 +111,9 @@ def train(args, io):
     print("Let's use", torch.cuda.device_count(), "GPUs!")
 
     '''Use Pretrain or not'''
-    if args.get('pretrain', False):
+    try:
         state_dict = torch.load("checkpoints/%s/best_insiou_model.pth" % args.exp_name,
-                                map_location=torch.device('cpu'))['model']
+                              map_location=torch.device('cpu'))['model']
         for k in state_dict.keys():
             if 'module' not in k:
                 from collections import OrderedDict
@@ -126,7 +126,7 @@ def train(args, io):
 
         print("Using pretrained model...")
         print(torch.load("checkpoints/%s/best_insiou_model.pth" % args.exp_name).keys())
-    else:
+    except:
         print("Training from scratch...")
 
     # =========== Dataloader =================
