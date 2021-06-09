@@ -1,7 +1,7 @@
 """
 Author: Benny
 Date: Nov 2019
-nohup python train.py --model model21A --normal --log_dir model21A > nohup/model21A.out &
+python main.py --model newE --exp_name try1 > nohup/model21A.out &
 """
 import argparse
 import os
@@ -22,7 +22,7 @@ import torch.nn.functional as F
 from pathlib import Path
 from tqdm import tqdm
 from data_util import PartNormalDataset
-from util.util import to_categorical, compute_overall_iou, load_cfg_from_cfg_file, merge_cfg_from_list, IOStream
+from .util import to_categorical, compute_overall_iou, load_cfg_from_cfg_file, merge_cfg_from_list, IOStream
 from tensorboardX import SummaryWriter
 from collections import defaultdict
 import torch.nn as nn
