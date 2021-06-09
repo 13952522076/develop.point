@@ -22,7 +22,7 @@ import torch.nn.functional as F
 from pathlib import Path
 from tqdm import tqdm
 from data_util import PartNormalDataset
-from .util import to_categorical, compute_overall_iou, load_cfg_from_cfg_file, merge_cfg_from_list, IOStream
+from partutils import to_categorical, compute_overall_iou, load_cfg_from_cfg_file, merge_cfg_from_list, IOStream
 from tensorboardX import SummaryWriter
 from collections import defaultdict
 import torch.nn as nn
