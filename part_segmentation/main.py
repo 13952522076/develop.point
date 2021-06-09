@@ -41,6 +41,7 @@ def parse_args():
     parser = argparse.ArgumentParser('Model')
     parser.add_argument('--model', type=str, default='pointnet_part_seg', help='model name')
     parser.add_argument('--batch_size', type=int, default=32, help='batch Size during training')
+    parser.add_argument('--test_batch_size', type=int, default=16, help='batch Size during testing')
     parser.add_argument('--epochs', default=200, type=int, help='epoch to run')
     parser.add_argument('--lr', default=0.003, type=float, help='initial learning rate')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD')
