@@ -435,7 +435,7 @@ if __name__ == "__main__":
     if args.exp_name is None:
         args.exp_name = args.model+str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
     else:
-        args.exp_name = args.model+ "-" + args.msg
+        args.exp_name = args.model+ "-" + args.exp_name
     _init_()
 
     if not args.eval:
