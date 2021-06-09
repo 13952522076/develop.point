@@ -45,7 +45,17 @@ def to_categorical(y, num_classes):
         return new_y.cuda(non_blocking=True)
     return new_y
 
+class PointcloudScale(object):
+    def __init__(self, scale_low=2. / 3., scale_high=3. / 2.):
+        self.scale_low = scale_low
+        self.scale_high = scale_high
 
+    def __call__(self, pc):
+        bsize = pc.size()[0]
+        for i in range(bsize):
+            xyz = np.random.uniform(low=self.scale_low, high=self.scale_high, size=[3])
+            pc[i, :, 0:3] = torch.mul(pc[i, :, 0:3], torch.from_numpy(xyz).float().cuda())
+        return pc
 
 def parse_args():
     parser = argparse.ArgumentParser('Model')
@@ -72,21 +82,21 @@ def main(args):
     # '''HYPER PARAMETER'''
     # os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
-    '''CREATE DIR'''
-    timestr = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
-    exp_dir = Path('./checkpoints/')
-    exp_dir.mkdir(exist_ok=True)
-    # exp_dir = exp_dir.joinpath('part_seg')
-    exp_dir.mkdir(exist_ok=True)
-    if args.log_dir is None:
-        exp_dir = exp_dir.joinpath(args.model+timestr)
-    else:
-        exp_dir = exp_dir.joinpath(args.log_dir)
-    exp_dir.mkdir(exist_ok=True)
-    checkpoints_dir = exp_dir.joinpath('checkpoints/')
-    checkpoints_dir.mkdir(exist_ok=True)
-    log_dir = exp_dir.joinpath('logs/')
-    log_dir.mkdir(exist_ok=True)
+    # '''CREATE DIR'''
+    # timestr = str(datetime.datetime.now().strftime('-%Y%m%d%H%M%S'))
+    # exp_dir = Path('./checkpoints/')
+    # exp_dir.mkdir(exist_ok=True)
+    # # exp_dir = exp_dir.joinpath('part_seg')
+    # exp_dir.mkdir(exist_ok=True)
+    # if args.log_dir is None:
+    #     exp_dir = exp_dir.joinpath(args.model+timestr)
+    # else:
+    #     exp_dir = exp_dir.joinpath(args.log_dir)
+    # exp_dir.mkdir(exist_ok=True)
+    # checkpoints_dir = exp_dir.joinpath('checkpoints/')
+    # checkpoints_dir.mkdir(exist_ok=True)
+    # log_dir = exp_dir.joinpath('logs/')
+    # log_dir.mkdir(exist_ok=True)
 
     '''LOG'''
     args = parse_args()
@@ -114,8 +124,6 @@ def main(args):
 
     '''MODEL LOADING'''
     MODEL = importlib.import_module(args.model)
-    shutil.copy('models/%s.py' % args.model, str(exp_dir))
-    shutil.copy('models/pointnet2_utils.py', str(exp_dir))
 
     classifier = MODEL.get_model(num_part, normal_channel=args.normal).cuda()
     classifier = torch.nn.DataParallel(classifier)
@@ -193,8 +201,8 @@ def main(args):
             optimizer.zero_grad()
 
             points = points.data.numpy()
-            # points[:, :, 0:3] = provider.random_scale_point_cloud(points[:, :, 0:3])
-            # points[:, :, 0:3] = provider.shift_point_cloud(points[:, :, 0:3])
+            points[:, :, 0:3] = provider.random_scale_point_cloud(points[:, :, 0:3])
+            points[:, :, 0:3] = provider.shift_point_cloud(points[:, :, 0:3])
             points = torch.Tensor(points)
             points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
             points = points.transpose(2, 1)
