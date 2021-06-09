@@ -238,10 +238,11 @@ def train_epoch(train_loader, model, opt, scheduler, epoch, num_part, num_classe
         seg_pred, loss = model(points, norm_plt, to_categorical(label, num_classes), target)  # seg_pred: b,n,50
 
         # instance iou without considering the class average at each batch_size:
-        batch_shapeious = compute_overall_iou_gpu(seg_pred, target, num_part)  # list of of current batch_iou:[iou1,iou2,...,iou#b_size]
+        # batch_shapeious = compute_overall_iou_gpu(seg_pred, target, num_part)  # list of of current batch_iou:[iou1,iou2,...,iou#b_size]
         # total iou of current batch in each process:
         # batch_shapeious = seg_pred.new_tensor([np.sum(batch_shapeious)], dtype=torch.float64)  # same device with seg_pred!!!
-        batch_shapeious = batch_shapeious.sum()
+        batch_shapeious = seg_pred.new_tensor([0.],
+                                              dtype=torch.float64)  # same device with seg_pred!!!
 
         # Loss backward
         loss = torch.mean(loss)
