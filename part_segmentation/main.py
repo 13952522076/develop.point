@@ -241,6 +241,7 @@ def train_epoch(train_loader, model, opt, scheduler, epoch, num_part, num_classe
         batch_shapeious = compute_overall_iou_gpu(seg_pred, target, num_part)  # list of of current batch_iou:[iou1,iou2,...,iou#b_size]
         # total iou of current batch in each process:
         # batch_shapeious = seg_pred.new_tensor([np.sum(batch_shapeious)], dtype=torch.float64)  # same device with seg_pred!!!
+        batch_shapeious = batch_shapeious.sum()
 
         # Loss backward
         loss = torch.mean(loss)
