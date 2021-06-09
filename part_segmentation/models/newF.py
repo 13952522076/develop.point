@@ -364,7 +364,7 @@ class PointNetFeaturePropagation(nn.Module):
 
 
 class get_model(nn.Module):
-    def __init__(self, num_classes=50,points=2048, embed_dim=128, normal_channel=True,
+    def __init__(self, num_classes=50,points=2048, embed_dim=128, normal_channel=False,
                  pre_blocks=[2,2,2,2], pos_blocks=[2,2,2,2], k_neighbors=[32,32,32,32],
                  reducers=[2,2,2,2], **kwargs):
         super(get_model, self).__init__()
