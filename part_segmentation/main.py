@@ -22,7 +22,7 @@ import torch.nn.functional as F
 from pathlib import Path
 from tqdm import tqdm
 from data_util import PartNormalDataset
-from partutils import to_categorical, compute_overall_iou, load_cfg_from_cfg_file, merge_cfg_from_list, IOStream
+from partutils import to_categorical, compute_overall_iou, compute_overall_iou_gpu, merge_cfg_from_list, IOStream
 from tensorboardX import SummaryWriter
 from collections import defaultdict
 import torch.nn as nn
@@ -238,7 +238,7 @@ def train_epoch(train_loader, model, opt, scheduler, epoch, num_part, num_classe
         seg_pred, loss = model(points, norm_plt, to_categorical(label, num_classes), target)  # seg_pred: b,n,50
 
         # instance iou without considering the class average at each batch_size:
-        batch_shapeious = compute_overall_iou(seg_pred, target, num_part)  # list of of current batch_iou:[iou1,iou2,...,iou#b_size]
+        batch_shapeious = compute_overall_iou_gpu(seg_pred, target, num_part)  # list of of current batch_iou:[iou1,iou2,...,iou#b_size]
         # total iou of current batch in each process:
         batch_shapeious = seg_pred.new_tensor([np.sum(batch_shapeious)], dtype=torch.float64)  # same device with seg_pred!!!
 
@@ -306,7 +306,7 @@ def test_epoch(test_loader, model, epoch, num_part, num_classes, io):
         seg_pred = model(points, norm_plt, to_categorical(label, num_classes))  # b,n,50
 
         # instance iou without considering the class average at each batch_size:
-        batch_shapeious = compute_overall_iou(seg_pred, target, num_part)  # [b]
+        batch_shapeious = compute_overall_iou_gpu(seg_pred, target, num_part)  # [b]
 
         # per category iou at each batch_size:
         for shape_idx in range(seg_pred.size(0)):  # sample_idx
@@ -398,7 +398,7 @@ def test(args, io):
             seg_pred = model(points, norm_plt, to_categorical(label, num_classes))  # b,n,50
 
         # instance iou without considering the class average at each batch_size:
-        batch_shapeious = compute_overall_iou(seg_pred, target, num_part)  # [b]
+        batch_shapeious = compute_overall_iou_gpu(seg_pred, target, num_part)  # [b]
         shape_ious += batch_shapeious  # iou +=, equals to .append
 
         # per category iou at each batch_size:
