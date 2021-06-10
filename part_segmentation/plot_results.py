@@ -102,7 +102,8 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
     for i in range(0,2048):
-        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=colrs_list[i])
+        col = target[i]
+        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=colrs_list[col])
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)
