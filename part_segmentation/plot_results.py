@@ -81,9 +81,7 @@ def parse_args():
 
 args = parse_args()
 
-cmap = pyplot.get_cmap('viridis')
-colors = cmap(np.linspace(0, 1, 50))
-np.random.shuffle(cmap)
+
 
 
 def plot_xyz(xyz, target, name="figures/figure.pdf"):
@@ -93,10 +91,12 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     x_vals = xyz[:, 0]
     y_vals = xyz[:, 1]
     z_vals = xyz[:, 2]
+
     ax.set_xlim3d(min(x_vals)*0.9, max(x_vals)*0.9)
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
-
+    cmap = pyplot.get_cmap('viridis')
+    colors = cmap(np.linspace(0, 1, 50))
     for i in range(0,2048):
         col = target[i]
         print(col)
