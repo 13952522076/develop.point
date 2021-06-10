@@ -1,15 +1,16 @@
 """
-Bsed on PointsformerE,
+Bsed on PointsformerE, more attention heads
 Bsed on PointsformerB, add more layers and the global context
 Based on PointsformerA, changed GELU to RELU
 Model21+Pointnet part segment
 """
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import einsum
 from einops import rearrange, repeat
-from pointnet2_ops import pointnet2_utils
+# from pointnet2_ops import pointnet2_utils
 
 def square_distance(src, dst):
     """
@@ -129,8 +130,8 @@ class LocalGrouper(nn.Module):
         S = self.groups
         xyz = xyz.contiguous()  # xyz [btach, points, xyz]
 
-        # fps_idx = farthest_point_sample(xyz, self.groups).long()
-        fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
+        fps_idx = farthest_point_sample(xyz, self.groups).long()
+        # fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
         new_xyz = index_points(xyz, fps_idx)
         new_points = index_points(points, fps_idx)
 
@@ -248,7 +249,9 @@ class PreExtraction(nn.Module):
                 FCBNReLU1DRes(channels)
             )
         self.operation = nn.Sequential(*operation)
-        self.transformer = TransformerBlock(channels, heads=4)
+        heads = max(channels//64,4)
+        # print(f"Testing heads: {heads}")
+        self.transformer = TransformerBlock(channels, heads=heads, dim_head=64)
     def forward(self, x):
         b, n, s, d = x.size()  # torch.Size([32, 512, 32, 6])
         x = x.permute(0, 1, 3, 2)
@@ -275,7 +278,9 @@ class PosExtraction(nn.Module):
                 FCBNReLU1DRes(channels)
             )
         self.operation = nn.Sequential(*operation)
-        self.transformer = TransformerBlock(channels, heads=4)
+        heads = max(channels // 64, 4)
+        # print(f"Testing heads: {heads}")
+        self.transformer = TransformerBlock(channels, heads=heads, dim_head=64)
 
     def forward(self, x):  # [b, d, k]
         return self.transformer(self.operation(x))
@@ -364,7 +369,7 @@ class PointNetFeaturePropagation(nn.Module):
 
 
 class get_model(nn.Module):
-    def __init__(self, num_classes=50,points=2048, embed_dim=256, normal_channel=True,
+    def __init__(self, num_classes=50,points=2048, embed_dim=128, normal_channel=True,
                  pre_blocks=[2,2,2,2], pos_blocks=[2,2,2,2], k_neighbors=[32,32,32,32],
                  reducers=[2,2,2,2], **kwargs):
         super(get_model, self).__init__()
@@ -377,18 +382,18 @@ class get_model(nn.Module):
             FCBNReLU1D(embed_dim, embed_dim)
         )
 
-        self.encoder_stage1 = encoder_stage(anchor_points=points//4, channel=256, reduce=False,
+        self.encoder_stage1 = encoder_stage(anchor_points=points//4, channel=128, reduce=False,
                                             pre_blocks=2, pos_blocks=2, k_neighbor=32)
-        self.encoder_stage2 = encoder_stage(anchor_points=points//8, channel=512, reduce=True,
+        self.encoder_stage2 = encoder_stage(anchor_points=points//8, channel=256, reduce=True,
                                             pre_blocks=2, pos_blocks=2, k_neighbor=32)
-        self.encoder_stage3 = encoder_stage(anchor_points=points // 16, channel=512, reduce=False,
+        self.encoder_stage3 = encoder_stage(anchor_points=points // 16, channel=256, reduce=False,
                                             pre_blocks=2, pos_blocks=2, k_neighbor=32)
-        self.encoder_stage4 = encoder_stage(anchor_points=points // 32, channel=1024, reduce=True,
+        self.encoder_stage4 = encoder_stage(anchor_points=points // 32, channel=512, reduce=True,
                                             pre_blocks=2, pos_blocks=2, k_neighbor=32)
 
-        self.fp4 = PointNetFeaturePropagation(in_channel=(1024+1024), mlp=[512,256,256])
-        self.fp3 = PointNetFeaturePropagation(in_channel=256+512, mlp=[512, 256, 256])
-        self.fp2 = PointNetFeaturePropagation(in_channel=256 + 512, mlp=[256, 256])
+        self.fp4 = PointNetFeaturePropagation(in_channel=(512+512), mlp=[512,256,256])
+        self.fp3 = PointNetFeaturePropagation(in_channel=256+256, mlp=[512, 256, 256])
+        self.fp2 = PointNetFeaturePropagation(in_channel=256 + 256, mlp=[256, 256])
         self.fp1 = PointNetFeaturePropagation(in_channel=256+128+128, mlp=[256, 256])
 
         self.info_encoder = nn.Sequential(
@@ -396,7 +401,7 @@ class get_model(nn.Module):
             FCBNReLU1D(128, 128),
         )
         self.global_encoder = nn.Sequential(
-            FCBNReLU1D(1024, 256),
+            FCBNReLU1D(512, 256),
             FCBNReLU1D(256, 128),
         )
 
