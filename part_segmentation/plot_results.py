@@ -76,7 +76,7 @@ def parse_args():
     parser.add_argument('--head_id', type=int, default=0, help='index of selected head')
     parser.add_argument('--save', action='store_true', default=False, help='use normals besides x,y,z')
     parser.add_argument('--show', action='store_true', default=True, help='use normals besides x,y,z')
-    parser.add_argument('--goon', action='store_true', default=True, help='use normals besides x,y,z')
+    parser.add_argument('--goon', action='store_true', default=False, help='use normals besides x,y,z')
 
     return parser.parse_args()
 
