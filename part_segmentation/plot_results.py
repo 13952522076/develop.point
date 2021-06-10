@@ -160,6 +160,7 @@ def main():
     with torch.no_grad():
         predict, _ = classifier(points, to_categorical(label, num_classes))
         predict = predict.max(dim=-1)[1]
+        predict = predict.squeeze(dim=0)
     print(f"Output shape: {predict.shape}")
     predict = predict.cpu().data.numpy()
     plot_xyz(xyz, predict, name=f"figures/{args.id}-predict.pdf")
