@@ -166,6 +166,10 @@ def main():
                                      normal_channel=args.normal)
 
     points, label, target = TEST_DATASET.__getitem__(args.id)
+    points = torch.tensor(points).unsqueeze(dim=0)
+    label = torch.tensor(label).unsqueeze(dim=0)
+    target = torch.tensor(target).unsqueeze(dim=0)
+
 
     points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
     print(f"Points shape: {points.shape} | label shape: {label.shape} | target shape: {target.shape}")
