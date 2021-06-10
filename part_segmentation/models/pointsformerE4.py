@@ -251,7 +251,7 @@ class PreExtraction(nn.Module):
         self.operation = nn.Sequential(*operation)
         heads = max(channels//64,4)
         # print(f"Testing heads: {heads}")
-        self.transformer = TransformerBlock(channels, heads=heads, dim_head=64)
+        self.transformer = TransformerBlock(channels, heads=heads, dim_head=32)
     def forward(self, x):
         b, n, s, d = x.size()  # torch.Size([32, 512, 32, 6])
         x = x.permute(0, 1, 3, 2)
@@ -280,7 +280,7 @@ class PosExtraction(nn.Module):
         self.operation = nn.Sequential(*operation)
         heads = max(channels // 64, 4)
         # print(f"Testing heads: {heads}")
-        self.transformer = TransformerBlock(channels, heads=heads, dim_head=64)
+        self.transformer = TransformerBlock(channels, heads=heads, dim_head=32)
 
     def forward(self, x):  # [b, d, k]
         return self.transformer(self.operation(x))
