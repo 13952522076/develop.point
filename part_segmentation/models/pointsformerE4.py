@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import einsum
 from einops import rearrange, repeat
-# from pointnet2_ops import pointnet2_utils
+from pointnet2_ops import pointnet2_utils
 
 def square_distance(src, dst):
     """
@@ -130,8 +130,8 @@ class LocalGrouper(nn.Module):
         S = self.groups
         xyz = xyz.contiguous()  # xyz [btach, points, xyz]
 
-        fps_idx = farthest_point_sample(xyz, self.groups).long()
-        # fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
+        # fps_idx = farthest_point_sample(xyz, self.groups).long()
+        fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
         new_xyz = index_points(xyz, fps_idx)
         new_points = index_points(points, fps_idx)
 
@@ -249,9 +249,8 @@ class PreExtraction(nn.Module):
                 FCBNReLU1DRes(channels)
             )
         self.operation = nn.Sequential(*operation)
-        heads = max(channels//64,4)
         # print(f"Testing heads: {heads}")
-        self.transformer = TransformerBlock(channels, heads=heads, dim_head=32)
+        self.transformer = TransformerBlock(channels, heads=16, dim_head=16)
     def forward(self, x):
         b, n, s, d = x.size()  # torch.Size([32, 512, 32, 6])
         x = x.permute(0, 1, 3, 2)
@@ -280,7 +279,7 @@ class PosExtraction(nn.Module):
         self.operation = nn.Sequential(*operation)
         heads = max(channels // 64, 4)
         # print(f"Testing heads: {heads}")
-        self.transformer = TransformerBlock(channels, heads=heads, dim_head=32)
+        self.transformer = TransformerBlock(channels, heads=16, dim_head=16)
 
     def forward(self, x):  # [b, d, k]
         return self.transformer(self.operation(x))
