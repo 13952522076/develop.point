@@ -100,8 +100,9 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     print(colors.shape)
     for i in range(0,2048):
         color = target[i]
-        color = colors[color]
-        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=color)
+        print(color)
+        # color = colors[color]
+        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c="green")
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)
