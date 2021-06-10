@@ -86,7 +86,6 @@ import matplotlib.colors as mcolors
 def_colors = mcolors.CSS4_COLORS
 colrs_list = []
 for k,v in def_colors.items():
-    print(k)
     colrs_list.append(k)
 np.random.shuffle(colrs_list)
 
@@ -159,9 +158,10 @@ def main():
     print(f"Points shape: {points.shape} | label shape: {label.shape} | target shape: {target.shape}")
     points = points.transpose(2, 1)
     with torch.no_grad():
-        target_predict, _ = classifier(points, to_categorical(label, num_classes))
-        target_predict = target_predict.max(dim=-1)[1]
-    print(f"Output shape: {target_predict.shape}")
-
+        predict, _ = classifier(points, to_categorical(label, num_classes))
+        predict = predict.max(dim=-1)[1]
+    print(f"Output shape: {predict.shape}")
+    predict = predict.cpu().data.numpy()
+    plot_xyz(points, predict, name=f"figures/{args.id}-predict.pdf")
 if __name__ == '__main__':
     main()
