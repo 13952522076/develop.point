@@ -42,15 +42,15 @@ def parse_args():
                         help='path to save checkpoint (default: checkpoint)')
     parser.add_argument('--model', default='plot21H', help='model name [default: pointnet_cls]')
     parser.add_argument('--num_classes', default=40, type=int, choices=[10, 40], help='training on ModelNet10/40')
-    parser.add_argument('--num_points', type=int, default=1024, help='Point Number')
+    parser.add_argument('--num_points', type=int, default=2048, help='Point Number')
 
 
     # for ploting
-    parser.add_argument('--id', default=11, type=int, help='ID of the example')
+    parser.add_argument('--id', default=26, type=int, help='ID of the example')
     parser.add_argument('--stage', type=int, default=0, help='index of stage')
     parser.add_argument('--point_id', type=int, default=10, help='index of selected point in FPS')
     parser.add_argument('--head_id', type=int, default=2, help='index of selected head')
-    parser.add_argument('--save', action='store_true', default=False, help='use normals besides x,y,z')
+    parser.add_argument('--save', action='store_true', default=True, help='use normals besides x,y,z')
     parser.add_argument('--show', action='store_true', default=False, help='use normals besides x,y,z')
     return parser.parse_args()
 
