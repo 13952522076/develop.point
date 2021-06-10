@@ -95,7 +95,11 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     ax.set_xlim3d(min(x_vals)*0.9, max(x_vals)*0.9)
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
-    ax.scatter(x_vals, y_vals, z_vals, color="mediumseagreen")
+    cmap = pyplot.get_cmap('viridis')
+    colors = cmap(np.linspace(0, 1, 50))
+    for i in range(0,2048):
+        clr = target[i]
+        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=colors[clr])
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)
@@ -132,8 +136,7 @@ def main():
         print("Checkpoint path error!!!")
         return 0
 
-
-
+    classifier.eval()
     root = 'data/shapenetcore_partanno_segmentation_benchmark_v0_normal/'
 
     TEST_DATASET = PartNormalDataset(root=root, npoints=args.npoint, split='test',
@@ -151,7 +154,6 @@ def main():
     points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
     print(f"Points shape: {points.shape} | label shape: {label.shape} | target shape: {target.shape}")
     points = points.transpose(2, 1)
-    classifier.eval()
     with torch.no_grad():
         target_predict, _ = classifier(points, to_categorical(label, num_classes))
         target_predict = target_predict.max(dim=-1)[1]
