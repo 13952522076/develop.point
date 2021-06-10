@@ -75,7 +75,7 @@ def parse_args():
 
     # voting
     parser.add_argument('--NUM_VOTE', type=int, default=5)
-    parser.add_argument('--epoch', default=100)
+    parser.add_argument('--epoch', type=int, default=100)
 
     return parser.parse_args()
 
