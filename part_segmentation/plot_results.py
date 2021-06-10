@@ -99,10 +99,10 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     colors = cmap(np.linspace(0, 1, 50))
     print(colors.shape)
     for i in range(0,2048):
-        color = target[i]
-        print(color)
-        # color = colors[color]
-        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c="green")
+        col = target[i]
+        print(col)
+        col = colors[col]
+        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=col)
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)

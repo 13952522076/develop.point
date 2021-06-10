@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 cmap = plt.get_cmap('viridis')
-names = ["bob", "joe", "andrew", "pete"]
+names = ["bob", "joe", "andrew", "pete","232"]
 colors = cmap(np.linspace(0, 1, len(names)))
 print(colors)
 print(colors.shape)
