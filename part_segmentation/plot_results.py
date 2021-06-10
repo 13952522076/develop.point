@@ -102,6 +102,7 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
         col = target[i]
         print(col)
         col = colors[col]
+        col = col.reshape(1, -1)
         ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=col)
 
     ax.set_axis_off()
