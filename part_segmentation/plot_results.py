@@ -84,7 +84,7 @@ args = parse_args()
 
 
 
-def plot_xyz(xyz, tartget, name="figures/figure.pdf"):
+def plot_xyz(xyz, target, name="figures/figure.pdf"):
     fig = pyplot.figure()
     ax = Axes3D(fig)
     # ax = fig.gca(projection='3d')
@@ -140,6 +140,9 @@ def main():
                                      normal_channel=args.normal)
 
     points, label, target = TEST_DATASET.__getitem__(args.id)
+
+    plot_xyz(points, target, name=f"figures/{args.id}-target.pdf")
+
     points = torch.tensor(points).unsqueeze(dim=0)
     label = torch.tensor(label).unsqueeze(dim=0)
     target = torch.tensor(target).unsqueeze(dim=0)
