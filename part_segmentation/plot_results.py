@@ -199,7 +199,12 @@ def main():
         TEST_DATASET = PartNormalDataset(root=root, npoints=2048, split='test',
                                          normal_channel=args.normal)
         points, label, target = TEST_DATASET.__getitem__(args.id)
-        plot_xyz_color(points, name=f"figures/{args.id}-input2048.pdf", color="mediumseagreen")
+        plot_xyz_color(points, name=f"figures/{args.id}-input.pdf", color="mediumseagreen")
+
+        TEST_DATASET = PartNormalDataset(root=root, npoints=2048, split='test',
+                                         normal_channel=args.normal)
+        points, label, target = TEST_DATASET.__getitem__(args.id)
+        plot_xyz_color(points, name=f"figures/{args.id}-input2048.pdf")
 
         TEST_DATASET = PartNormalDataset(root=root, npoints=512, split='test',
                                          normal_channel=args.normal)
