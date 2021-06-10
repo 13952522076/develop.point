@@ -99,7 +99,6 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     colors = cmap(np.linspace(0, 1, 50))
     for i in range(0,2048):
         col = target[i]
-        print(col)
         col = colors[col]
         col = col.reshape(1, -1)
         ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=col)
