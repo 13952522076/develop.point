@@ -174,8 +174,10 @@ def main():
     points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
     print(f"Points shape: {points.shape} | label shape: {label.shape} | target shape: {target.shape}")
     points = points.transpose(2, 1)
-    seg_pred, _ = classifier(points, to_categorical(label, num_classes))
-
+    classifier.eval()
+    with torch.no_grad():
+        seg_pred, _ = classifier(points, to_categorical(label, num_classes))
+    print(f"Output shape: {seg_pred.shape}")
 
 if __name__ == '__main__':
     main()
