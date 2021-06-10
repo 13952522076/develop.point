@@ -84,7 +84,7 @@ def parse_args():
 
 
 
-def plot_xyz(xyz, args, selected_xyz=None, name="figure.pdf", local_attention=None, global_attention=None, plot_which=None ): # xyz: [n,3] selected_xyz:[3]
+def plot_xyz(xyz, tartget, name="figures/figure.pdf"):
     fig = pyplot.figure()
     ax = Axes3D(fig)
     # ax = fig.gca(projection='3d')
@@ -95,39 +95,11 @@ def plot_xyz(xyz, args, selected_xyz=None, name="figure.pdf", local_attention=No
     ax.set_xlim3d(min(x_vals)*0.9, max(x_vals)*0.9)
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
-
-
-    if plot_which=="local":
-        assert local_attention is not None
-        print(f"Local  attention range: {local_attention.min()}-{local_attention.max()}")
-        norm = pyplot.Normalize(vmin=local_attention.min()*1.1, vmax=local_attention.max()*1.1)
-        ax.scatter(x_vals, y_vals, z_vals, c=local_attention, cmap='Reds', norm=norm)
-    elif plot_which=="global":
-        assert global_attention is not None
-        print(f"Global attention range: {global_attention.min()}-{global_attention.max()}")
-        print(f"Global attention max value and indices: {global_attention.max(dim=0)}")
-        norm = pyplot.Normalize(vmin=global_attention.min()*1.1, vmax=global_attention.max()*1.5)
-        # print(f"global norm_color range: {norm_color.min()}-{norm_color.max()}")
-        ax.scatter(x_vals, y_vals, z_vals, c=global_attention, cmap='hsv', norm=norm)
-    else:
-        ax.scatter(x_vals, y_vals, z_vals, color="mediumseagreen")
-    if selected_xyz is not None:
-        ax.scatter(selected_xyz[0],selected_xyz[1], selected_xyz[2], color="green", marker="*", s=150,)
-    # # make the panes transparent
-    # ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    # ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    # ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    # # make the grid lines transparent
-    # ax.xaxis._axinfo["grid"]['color'] = (1, 1, 1, 0)
-    # ax.yaxis._axinfo["grid"]['color'] = (1, 1, 1, 0)
-    # ax.zaxis._axinfo["grid"]['color'] = (1, 1, 1, 0)
-
+    ax.scatter(x_vals, y_vals, z_vals, color="mediumseagreen")
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)
     # pyplot.tight_layout()
-    if args.show:
-        pyplot.show()
     if args.save:
         fig.savefig(name, bbox_inches='tight', pad_inches=0.00, transparent=True)
 
@@ -135,6 +107,7 @@ def plot_xyz(xyz, args, selected_xyz=None, name="figure.pdf", local_attention=No
 
 def main():
     args = parse_args()
+    global args
     # print(f"args: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
@@ -154,6 +127,7 @@ def main():
     try:
         checkpoint = torch.load(str(exp_dir) + '/checkpoints/best_model.pth')
         classifier.load_state_dict(checkpoint['model_state_dict'])
+        print("Checkpoints has been loaded.")
     except:
         print("Checkpoint path error!!!")
         return 0
@@ -176,8 +150,9 @@ def main():
     points = points.transpose(2, 1)
     classifier.eval()
     with torch.no_grad():
-        seg_pred, _ = classifier(points, to_categorical(label, num_classes))
-    print(f"Output shape: {seg_pred.shape}")
+        target_predict, _ = classifier(points, to_categorical(label, num_classes))
+        target_predict = target_predict.max(dim=-1)[1]
+    print(f"Output shape: {target_predict.shape}")
 
 if __name__ == '__main__':
     main()
