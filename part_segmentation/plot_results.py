@@ -70,7 +70,7 @@ def parse_args():
     parser.add_argument('--lr_decay', type=float, default=0.5, help='decay rate for lr decay')
 
     # for ploting
-    parser.add_argument('--id', default=27, type=int, help='ID of the example')
+    parser.add_argument('--id', type=int, help='ID of the example')
     parser.add_argument('--stage', type=int, default=0, help='index of stage')
     parser.add_argument('--point_id', type=int, default=3, help='index of selected point in FPS')
     parser.add_argument('--head_id', type=int, default=0, help='index of selected head')
@@ -81,6 +81,8 @@ def parse_args():
     return parser.parse_args()
 
 args = parse_args()
+if args.id is None:
+    args.id = np.random.randint(0,3000)
 
 
 import matplotlib.colors as mcolors
