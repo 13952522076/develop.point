@@ -45,12 +45,12 @@ def parse_args():
     parser.add_argument('--num_points', type=int, default=2048, help='Point Number')
 
 
-    # for ploting
-    parser.add_argument('--id', default=26, type=int, help='ID of the example')
+    # for ploting  2108chair    1938airplane   11 van
+    parser.add_argument('--id', default=1938, type=int, help='ID of the example 2468')
     parser.add_argument('--stage', type=int, default=0, help='index of stage')
     parser.add_argument('--point_id', type=int, default=10, help='index of selected point in FPS')
     parser.add_argument('--head_id', type=int, default=2, help='index of selected head')
-    parser.add_argument('--save', action='store_true', default=True, help='use normals besides x,y,z')
+    parser.add_argument('--save', action='store_true', default=False, help='use normals besides x,y,z')
     parser.add_argument('--show', action='store_true', default=False, help='use normals besides x,y,z')
     return parser.parse_args()
 
