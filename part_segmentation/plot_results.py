@@ -82,7 +82,13 @@ def parse_args():
 args = parse_args()
 
 
-
+import matplotlib.colors as mcolors
+def_colors = mcolors.CSS4_COLORS
+colrs_list = []
+for k,v in def_colors.items():
+    print(k)
+    colrs_list.append(k)
+np.random.shuffle(colrs_list)
 
 def plot_xyz(xyz, target, name="figures/figure.pdf"):
     fig = pyplot.figure()
@@ -95,13 +101,8 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     ax.set_xlim3d(min(x_vals)*0.9, max(x_vals)*0.9)
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
-    cmap = pyplot.get_cmap('viridis')
-    colors = cmap(np.linspace(0, 1, 50))
     for i in range(0,2048):
-        col = target[i]
-        col = colors[col]
-        col = col.reshape(1, -1)
-        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=col)
+        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=colrs_list[i])
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)

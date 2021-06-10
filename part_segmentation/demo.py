@@ -4,6 +4,14 @@ import matplotlib.pyplot as plt
 cmap = plt.get_cmap('viridis')
 names = ["bob", "joe", "andrew", "pete","232"]
 colors = cmap(np.linspace(0, 1, len(names)))
+import matplotlib.colors as mcolors
+def_colors = mcolors.CSS4_COLORS
+colrs_list = []
+for k,v in def_colors.items():
+    print(k)
+    colrs_list.append(k)
+np.random.shuffle(colrs_list)
+
 print(colors)
 print(colors.shape)
 # [[ 0.267004  0.004874  0.329415  1.      ]
@@ -14,6 +22,6 @@ print(colors.shape)
 x = np.linspace(0, np.pi*2, 100)
 for i, (name, color) in enumerate(zip(names, colors), 1):
     color = colors[i-1]
-    plt.plot(x, np.sin(x)/i, label=name, c=color)
+    plt.plot(x, np.sin(x)/i, label=name, c=colrs_list[i])
 plt.legend()
 plt.show()
