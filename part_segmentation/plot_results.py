@@ -76,6 +76,7 @@ def parse_args():
     parser.add_argument('--head_id', type=int, default=0, help='index of selected head')
     parser.add_argument('--save', action='store_true', default=False, help='use normals besides x,y,z')
     parser.add_argument('--show', action='store_true', default=True, help='use normals besides x,y,z')
+    parser.add_argument('--goon', action='store_true', default=True, help='use normals besides x,y,z')
 
     return parser.parse_args()
 
@@ -111,6 +112,35 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
         fig.savefig(name, bbox_inches='tight', pad_inches=0.00, transparent=True)
 
     pyplot.close()
+
+
+def plot_xyz_color(xyz, name="figure.pdf", color=None ): # xyz: [n,3] selected_xyz:[3]
+    fig = pyplot.figure()
+    ax = Axes3D(fig)
+    # ax = fig.gca(projection='3d')
+    x_vals = xyz[:, 0]
+    y_vals = xyz[:, 1]
+    z_vals = xyz[:, 2]
+
+    ax.set_xlim3d(min(x_vals)*0.9, max(x_vals)*0.9)
+    ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
+    ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
+
+    color = x_vals+y_vals+z_vals
+    norm = pyplot.Normalize(vmin=min(color), vmax=max(color))
+    if color is None:
+        ax.scatter(x_vals, y_vals, z_vals, c=color, cmap='hsv', norm=norm)
+    else:
+        ax.scatter(x_vals, y_vals, z_vals, c=color)
+
+    ax.set_axis_off()
+    ax.get_xaxis().get_major_formatter().set_useOffset(False)
+    # pyplot.tight_layout()
+
+    fig.savefig(name, bbox_inches='tight', pad_inches=0.00, transparent=True)
+
+    pyplot.close()
+
 
 def main():
 
@@ -164,5 +194,23 @@ def main():
     print(f"Output shape: {predict.shape}")
     predict = predict.cpu().data.numpy()
     plot_xyz(xyz, predict, name=f"figures/{args.id}-predict.pdf")
+
+    if args.goon:
+        TEST_DATASET = PartNormalDataset(root=root, npoints=2048, split='test',
+                                         normal_channel=args.normal)
+        points, label, target = TEST_DATASET.__getitem__(args.id)
+        plot_xyz_color(points, name=f"figures/{args.id}-input2048.pdf", color="mediumseagreen")
+
+        TEST_DATASET = PartNormalDataset(root=root, npoints=512, split='test',
+                                         normal_channel=args.normal)
+        points, label, target = TEST_DATASET.__getitem__(args.id)
+        plot_xyz_color(points, name=f"figures/{args.id}-input512.pdf")
+
+        TEST_DATASET = PartNormalDataset(root=root, npoints=128, split='test',
+                                         normal_channel=args.normal)
+        points, label, target = TEST_DATASET.__getitem__(args.id)
+        plot_xyz_color(points, name=f"figures/{args.id}-input128.pdf")
+
+
 if __name__ == '__main__':
     main()
