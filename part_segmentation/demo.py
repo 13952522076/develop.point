@@ -13,8 +13,7 @@ print(colors.shape)
 
 x = np.linspace(0, np.pi*2, 100)
 for i, (name, color) in enumerate(zip(names, colors), 1):
-    print(color)
-    print(color.shape)
+    color = colors[i-1]
     plt.plot(x, np.sin(x)/i, label=name, c=color)
 plt.legend()
 plt.show()
