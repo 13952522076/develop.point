@@ -101,7 +101,7 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
     for i in range(0,2048):
-        col = target[i]
+        col = int(target[i])
         ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=colrs_list[col])
 
     ax.set_axis_off()
@@ -161,7 +161,7 @@ def main():
         predict, _ = classifier(points, to_categorical(label, num_classes))
         predict = predict.max(dim=-1)[1]
     print(f"Output shape: {predict.shape}")
-    predict = int(predict.cpu().data.numpy())
+    predict = predict.cpu().data.numpy()
     plot_xyz(xyz, predict, name=f"figures/{args.id}-predict.pdf")
 if __name__ == '__main__':
     main()
