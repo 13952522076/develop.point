@@ -74,7 +74,7 @@ def parse_args():
     parser.add_argument('--lr_decay', type=float, default=0.5, help='decay rate for lr decay')
 
     # voting
-    parser.add_argument('--NUM_VOTE', type=int, default=10)
+    parser.add_argument('--NUM_VOTE', type=int, default=5)
     parser.add_argument('--epoch', default=100)
 
     return parser.parse_args()
@@ -103,7 +103,8 @@ def main(args):
     args = parse_args()
     logger = logging.getLogger("Model")
     logger.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(message)s')
     file_handler = logging.FileHandler('%s/%s.txt' % (log_dir, args.model + "_voting_eval" + timestr))
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
@@ -221,12 +222,8 @@ def main(args):
             best_class_avg_iou = test_metrics['class_avg_iou']
         if test_metrics['inctance_avg_iou'] > best_inctance_avg_iou:
             best_inctance_avg_iou = test_metrics['inctance_avg_iou']
-        log_string('Best accuracy is: %.5f' % best_acc)
-        log_string('Best class avg mIOU is: %.5f' % best_class_avg_iou)
-        log_string('Best inctance avg mIOU is: %.5f' % best_inctance_avg_iou)
-        current_best = 'Current Best acc: %.5f | Best class avg mIOU is: %.5f | Best inctance avg mIOU is: %.5f' \
-                       % (best_acc, best_class_avg_iou, best_inctance_avg_iou)
-        log_string(current_best)
+        log_string('Epoch %d best Accuracy: %f  Class avg mIOU: %f   Inctance avg mIOU: %f' % (
+            epoch + 1, best_acc, best_class_avg_iou, best_inctance_avg_iou))
 
 
 if __name__ == '__main__':
