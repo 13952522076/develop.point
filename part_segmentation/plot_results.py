@@ -146,8 +146,8 @@ def main():
                                      normal_channel=args.normal)
 
     points, label, target = TEST_DATASET.__getitem__(args.id)
-
-    plot_xyz(points, target, name=f"figures/{args.id}-target.pdf")
+    xyz = points
+    plot_xyz(xyz, target, name=f"figures/{args.id}-target.pdf")
 
     points = torch.tensor(points).unsqueeze(dim=0)
     label = torch.tensor(label).unsqueeze(dim=0)
@@ -162,6 +162,6 @@ def main():
         predict = predict.max(dim=-1)[1]
     print(f"Output shape: {predict.shape}")
     predict = predict.cpu().data.numpy()
-    plot_xyz(points, predict, name=f"figures/{args.id}-predict.pdf")
+    plot_xyz(xyz, predict, name=f"figures/{args.id}-predict.pdf")
 if __name__ == '__main__':
     main()
