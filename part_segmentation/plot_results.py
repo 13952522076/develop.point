@@ -97,9 +97,10 @@ def plot_xyz(xyz, target, name="figures/figure.pdf"):
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
     cmap = pyplot.get_cmap('viridis')
     colors = cmap(np.linspace(0, 1, 50))
+    print(colors.shape)
     for i in range(0,2048):
-        clr = target[i]
-        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c=colors[clr])
+
+        ax.scatter(x_vals[i], y_vals[i], z_vals[i], c="green")
 
     ax.set_axis_off()
     ax.get_xaxis().get_major_formatter().set_useOffset(False)
