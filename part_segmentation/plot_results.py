@@ -24,8 +24,6 @@ import torch.utils.data
 import torch.utils.data.distributed
 from torch.utils.data import DataLoader
 # import models as models
-from plot21 import plot21H
-from utils import set_seed
 
 
 import argparse
@@ -176,5 +174,4 @@ def main():
 
 
 if __name__ == '__main__':
-    set_seed(32) # must
     main()
