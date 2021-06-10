@@ -222,7 +222,7 @@ def main(args):
             best_class_avg_iou = test_metrics['class_avg_iou']
         if test_metrics['inctance_avg_iou'] > best_inctance_avg_iou:
             best_inctance_avg_iou = test_metrics['inctance_avg_iou']
-        log_string('Epoch %d best Accuracy: %f  Class avg mIOU: %f   Inctance avg mIOU: %f' % (
+        log_string('Epoch %d BEST Accuracy: %f  Class avg mIOU: %f   Inctance avg mIOU: %f' % (
             epoch + 1, best_acc, best_class_avg_iou, best_inctance_avg_iou))
 
 
