@@ -209,10 +209,20 @@ def main():
         points, label, target = TEST_DATASET.__getitem__(args.id)
         plot_xyz_color(points, name=f"figures/{args.id}-input2048.pdf")
 
+        TEST_DATASET = PartNormalDataset(root=root, npoints=1024, split='test',
+                                         normal_channel=args.normal)
+        points, label, target = TEST_DATASET.__getitem__(args.id)
+        plot_xyz_color(points, name=f"figures/{args.id}-input1024.pdf")
+
         TEST_DATASET = PartNormalDataset(root=root, npoints=512, split='test',
                                          normal_channel=args.normal)
         points, label, target = TEST_DATASET.__getitem__(args.id)
         plot_xyz_color(points, name=f"figures/{args.id}-input512.pdf")
+
+        TEST_DATASET = PartNormalDataset(root=root, npoints=256, split='test',
+                                         normal_channel=args.normal)
+        points, label, target = TEST_DATASET.__getitem__(args.id)
+        plot_xyz_color(points, name=f"figures/{args.id}-input256.pdf")
 
         TEST_DATASET = PartNormalDataset(root=root, npoints=128, split='test',
                                          normal_channel=args.normal)
