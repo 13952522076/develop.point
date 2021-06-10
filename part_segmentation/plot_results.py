@@ -82,7 +82,7 @@ def parse_args():
 
 args = parse_args()
 if args.id is None:
-    args.id = np.random.randint(0,3000)
+    args.id = np.random.randint(0,2874)
 
 
 import matplotlib.colors as mcolors
