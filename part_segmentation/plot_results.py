@@ -128,9 +128,10 @@ def plot_xyz_color(xyz, name="figure.pdf", color=None ): # xyz: [n,3] selected_x
     ax.set_ylim3d(min(y_vals)*0.9, max(y_vals)*0.9)
     ax.set_zlim3d(min(z_vals)*0.9, max(z_vals)*0.9)
 
-    color = x_vals+y_vals+z_vals
-    norm = pyplot.Normalize(vmin=min(color), vmax=max(color))
+
     if color is None:
+        color = x_vals + y_vals + z_vals
+        norm = pyplot.Normalize(vmin=min(color), vmax=max(color))
         ax.scatter(x_vals, y_vals, z_vals, c=color, cmap='hsv', norm=norm)
     else:
         ax.scatter(x_vals, y_vals, z_vals, c=color)
