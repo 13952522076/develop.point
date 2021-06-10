@@ -161,7 +161,7 @@ def main():
         predict, _ = classifier(points, to_categorical(label, num_classes))
         predict = predict.max(dim=-1)[1]
     print(f"Output shape: {predict.shape}")
-    predict = predict.cpu().data.numpy()
+    predict = int(predict.cpu().data.numpy())
     plot_xyz(xyz, predict, name=f"figures/{args.id}-predict.pdf")
 if __name__ == '__main__':
     main()
