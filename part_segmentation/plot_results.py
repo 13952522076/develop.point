@@ -87,7 +87,7 @@ def_colors = mcolors.CSS4_COLORS
 colrs_list = []
 for k,v in def_colors.items():
     colrs_list.append(k)
-np.random.shuffle(colrs_list)
+# np.random.shuffle(colrs_list)
 
 def plot_xyz(xyz, target, name="figures/figure.pdf"):
     fig = pyplot.figure()
