@@ -79,7 +79,7 @@ def parse_args():
 
     return parser.parse_args()
 
-
+args = parse_args()
 
 
 
@@ -106,8 +106,8 @@ def plot_xyz(xyz, tartget, name="figures/figure.pdf"):
     pyplot.close()
 
 def main():
-    args = parse_args()
-    global args
+
+
     # print(f"args: {args}")
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
