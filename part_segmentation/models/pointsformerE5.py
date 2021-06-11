@@ -1,11 +1,12 @@
 """
+Based on E2, change the relu to gelu.
 Based on PointsformerE, change the configure of pre/pos_blocks
 Bsed on PointsformerB, add more layers and the global context
 Based on PointsformerA, changed GELU to RELU
 Model21+Pointnet part segment
 """
 """
-Instance 2
+Instance 2 (PointsformerE2)
 Best accuracy is: 0.94441
 Best class avg mIOU is: 0.82887
 Best inctance avg mIOU is: 0.85721
@@ -158,7 +159,7 @@ class FCBNReLU1D(nn.Module):
         self.net = nn.Sequential(
             nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(out_channels),
-            nn.ReLU(inplace=True)
+            nn.GELU()
         )
 
     def forward(self, x):
@@ -171,13 +172,13 @@ class FCBNReLU1DRes(nn.Module):
         self.net = nn.Sequential(
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel),
-            nn.ReLU(inplace=True),
+            nn.GELU(),
             nn.Conv1d(in_channels=channel, out_channels=channel, kernel_size=kernel_size, bias=bias),
             nn.BatchNorm1d(channel)
         )
 
     def forward(self, x):
-        return F.relu(self.net(x)+x, inplace=True)
+        return F.gelu(self.net(x)+x)
 
 
 class Attention(nn.Module):
@@ -235,9 +236,9 @@ class TransformerBlock(nn.Module):
         :return: [b batch,  d dimension, p points,]
         """
         att = self.attention(x)
-        att = F.relu(att+x, inplace=True)
+        att = F.gelu(att+x)
         out = self.ffn(att)
-        out = F.relu(att+out, inplace=True)
+        out = F.gelu(att+out)
         return out
 
 
@@ -298,7 +299,7 @@ class encoder_stage(nn.Module):
         if self.reduce:
             self.reducer = nn.Sequential(
                 nn.Linear(out_channel, channel),
-                nn.ReLU(inplace=True)
+                nn.GELU()
             )
             out_channel = channel
         self.local_grouper = LocalGrouper(anchor_points, k_neighbor)  # [b,g,k,d]
@@ -364,7 +365,7 @@ class PointNetFeaturePropagation(nn.Module):
         new_points = new_points.permute(0, 2, 1)
         for i, conv in enumerate(self.mlp_convs):
             bn = self.mlp_bns[i]
-            new_points = F.relu(bn(conv(new_points)),inplace=True)
+            new_points = F.gelu(bn(conv(new_points)))
         return new_points
 
 
@@ -437,9 +438,9 @@ class get_model(nn.Module):
         l0_points = self.fp1(xyz, xyz_1, torch.cat([extra_info,global_context.expand_as(extra_info) ], 1), l1_points)
 
         # FC layers
-        feat = F.relu(self.bn0(self.conv0(l0_points)), inplace=True)
+        feat = F.gelu(self.bn0(self.conv0(l0_points)))
         feat = self.drop0(feat)
-        feat = F.relu(self.bn1(self.conv1(feat)),inplace=True)
+        feat = F.gelu(self.bn1(self.conv1(feat)))
         x = self.drop1(feat)
         x = self.conv2(x)
         x = F.log_softmax(x, dim=1)

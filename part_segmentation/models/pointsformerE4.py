@@ -5,6 +5,13 @@ Based on PointsformerA, changed GELU to RELU
 Model21+Pointnet part segment
 """
 
+"""
+Instance 4
+Best accuracy is: 0.94424
+Best class avg mIOU is: 0.83185
+Best inctance avg mIOU is: 0.85595
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

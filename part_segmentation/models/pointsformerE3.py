@@ -4,6 +4,14 @@ Bsed on PointsformerB, add more layers and the global context
 Based on PointsformerA, changed GELU to RELU
 Model21+Pointnet part segment
 """
+
+"""
+Instance 3
+Best accuracy is: 0.94402
+Best class avg mIOU is: 0.82959
+Best inctance avg mIOU is: 0.85580
+Epoch 100 BEST Accuracy: 0.944264  Class avg mIOU: 0.830559   Inctance avg mIOU: 0.858369
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
