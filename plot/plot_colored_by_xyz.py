@@ -38,12 +38,12 @@ from utils import set_seed
 def parse_args():
     """Parameters"""
     parser = argparse.ArgumentParser('training')
-    parser.add_argument('--num_points', type=int, default=2048, help='Point Number')
+    parser.add_argument('--num_points', type=int, default=5000, help='Point Number')
 
-    # for ploting
-    parser.add_argument('--id', default=26, type=int, help='ID of the example')
-    parser.add_argument('--save', action='store_true', default=True, help='use normals besides x,y,z')
-    parser.add_argument('--show', action='store_true', default=False, help='use normals besides x,y,z')
+    # for ploting 26 airplane
+    parser.add_argument('--id', default=800, type=int, help='ID of the example 2468')
+    parser.add_argument('--save', action='store_true', default=False, help='use normals besides x,y,z')
+    parser.add_argument('--show', action='store_true', default=True, help='use normals besides x,y,z')
     return parser.parse_args()
 
 def plot_xyz(xyz, args,  name="figure.pdf" ): # xyz: [n,3] selected_xyz:[3]

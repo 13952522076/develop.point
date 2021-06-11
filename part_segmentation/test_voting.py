@@ -74,7 +74,7 @@ def parse_args():
     parser.add_argument('--lr_decay', type=float, default=0.5, help='decay rate for lr decay')
 
     # voting
-    parser.add_argument('--NUM_VOTE', type=int, default=5)
+    parser.add_argument('--NUM_VOTE', type=int, default=10)
     parser.add_argument('--epoch', type=int, default=100)
 
     return parser.parse_args()

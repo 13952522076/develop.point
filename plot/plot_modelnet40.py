@@ -33,15 +33,15 @@ f = h5py.File("/Users/melody/Downloads/ply_data_test0.h5", 'r')
 data = f["data"]
 id = np.random.randint(0,2048)
 id=800 #airplane 11
-id=2001 # lighter
-id=1
-points=2048
+# id=2001 # lighter
+# id=1
+points=300
 save_fig=True
 sample = data[id,0:points,:]
 
 # rotation = np.array([[1., 0.,0.], [0.,1.,0.], [0.,0.,1.]])
-rotation = rotation_matrix([0.3, 0., 0.], 1.2)
-sample= np.matmul(sample, rotation)
+# rotation = rotation_matrix([0.3, 0., 0.], 1.2)
+# sample= np.matmul(sample, rotation)
 
 fig = pyplot.figure()
 ax = Axes3D(fig)
@@ -59,8 +59,11 @@ z_min = min(sequence_containing_z_vals)
 z_max = max(sequence_containing_z_vals)
 print(f"z range: {z_max-z_min}")
 
+color_value = sequence_containing_x_vals+ sequence_containing_y_vals+ sequence_containing_z_vals
+norm = pyplot.Normalize(vmin=min(color_value), vmax=max(color_value))
 
-ax.scatter(sequence_containing_x_vals, sequence_containing_y_vals, sequence_containing_z_vals)
+ax.scatter(sequence_containing_x_vals, sequence_containing_y_vals, sequence_containing_z_vals,
+           c=color_value, cmap='hsv', norm=norm)
 
 
 # make the panes transparent
@@ -72,13 +75,13 @@ ax.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 ax.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 # Make panes transparent
-ax.set_xlim3d(x_min,x_max)
-ax.set_ylim3d(y_min,y_max)
-ax.set_zlim3d(z_min,z_max)
+ax.set_xlim3d(x_min*0.7,x_max*0.7)
+ax.set_ylim3d(y_min*0.7,y_max*0.7)
+ax.set_zlim3d(z_min*0.7,z_max*0.7)
 
 ax.set_axis_off()
 ax.get_xaxis().get_major_formatter().set_useOffset(False)
 # pyplot.tight_layout()
 pyplot.show()
 if save_fig:
-    fig.savefig(f"{id}_{points}.pdf", bbox_inches='tight', pad_inches=0.05, transparent=True)
+    fig.savefig(f"{id}_{points}.pdf", bbox_inches='tight', pad_inches=0.0, transparent=True)
