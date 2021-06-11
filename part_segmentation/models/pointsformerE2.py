@@ -9,6 +9,8 @@ Instance 2
 Best accuracy is: 0.94441
 Best class avg mIOU is: 0.82887
 Best inctance avg mIOU is: 0.85721
+
+Epoch 100 BEST Accuracy: 0.945145  Class avg mIOU: 0.835058   Inctance avg mIOU: 0.859883
 """
 
 import torch

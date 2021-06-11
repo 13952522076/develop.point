@@ -1,19 +1,18 @@
 """
-Based on PointsformerE
-Based on PointsformerE: change some configures, more channels in the upscaling.
+Base on PointsformerE2, remove global context.
+Based on PointsformerE, change the configure of pre/pos_blocks
 Bsed on PointsformerB, add more layers and the global context
 Based on PointsformerA, changed GELU to RELU
 Model21+Pointnet part segment
 """
-
 """
-Instance 1
-Best accuracy is: 0.94448
-Best class avg mIOU is: 0.83053
-Best inctance avg mIOU is: 0.85671
-Epoch 100 BEST Accuracy: 0.945101  Class avg mIOU: 0.833679   Inctance avg mIOU: 0.859454
-"""
+Instance 2
+Best accuracy is: 0.94441
+Best class avg mIOU is: 0.82887
+Best inctance avg mIOU is: 0.85721
 
+Epoch 100 BEST Accuracy: 0.945145  Class avg mIOU: 0.835058   Inctance avg mIOU: 0.859883
+"""
 
 import torch
 import torch.nn as nn
@@ -389,35 +388,35 @@ class get_model(nn.Module):
         )
 
         self.encoder_stage1 = encoder_stage(anchor_points=points//4, channel=128, reduce=False,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
         self.encoder_stage2 = encoder_stage(anchor_points=points//8, channel=256, reduce=True,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
         self.encoder_stage3 = encoder_stage(anchor_points=points // 16, channel=256, reduce=False,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
         self.encoder_stage4 = encoder_stage(anchor_points=points // 32, channel=512, reduce=True,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
 
-        self.fp4 = PointNetFeaturePropagation(in_channel=(512+512), mlp=[512,512,512])
-        self.fp3 = PointNetFeaturePropagation(in_channel=512+256, mlp=[512, 512, 512])
-        self.fp2 = PointNetFeaturePropagation(in_channel=512 + 256, mlp=[512, 512])
-        self.fp1 = PointNetFeaturePropagation(in_channel=512+128+128, mlp=[512, 512])
+        self.fp4 = PointNetFeaturePropagation(in_channel=(512+512), mlp=[512,256,256])
+        self.fp3 = PointNetFeaturePropagation(in_channel=256+256, mlp=[512, 256, 256])
+        self.fp2 = PointNetFeaturePropagation(in_channel=256 + 256, mlp=[256, 256])
+        self.fp1 = PointNetFeaturePropagation(in_channel=256+128, mlp=[256, 256])
 
         self.info_encoder = nn.Sequential(
             FCBNReLU1D(16+3+input_channel, 128),
             FCBNReLU1D(128, 128),
         )
-        self.global_encoder = nn.Sequential(
-            FCBNReLU1D(512, 256),
-            FCBNReLU1D(256, 128),
-        )
+        # self.global_encoder = nn.Sequential(
+        #     FCBNReLU1D(512, 256),
+        #     FCBNReLU1D(256, 128),
+        # )
 
-        self.conv0 = nn.Conv1d(512, 512, 1)
-        self.bn0 = nn.BatchNorm1d(512)
+        self.conv0 = nn.Conv1d(256, 256, 1)
+        self.bn0 = nn.BatchNorm1d(256)
         self.drop0 = nn.Dropout(0.4)
-        self.conv1 = nn.Conv1d(512, 256, 1)
-        self.bn1 = nn.BatchNorm1d(256)
+        self.conv1 = nn.Conv1d(256, 128, 1)
+        self.bn1 = nn.BatchNorm1d(128)
         self.drop1 = nn.Dropout(0.4)
-        self.conv2 = nn.Conv1d(256, num_classes, 1)
+        self.conv2 = nn.Conv1d(128, num_classes, 1)
 
     def forward(self, x, cls_label):
         points_0 = x
@@ -429,7 +428,7 @@ class get_model(nn.Module):
         xyz_2, fea_2 = self.encoder_stage2(xyz_1, fea_1)  # [b,p2,3] [b,d2,p2]
         xyz_3, fea_3 = self.encoder_stage3(xyz_2, fea_2)  # [b,p3,3] [b,d3,p3]
         xyz_4, fea_4 = self.encoder_stage4(xyz_3, fea_3)  # [b,p4,3] [b,d4,p3]
-        global_context = F.adaptive_max_pool1d(fea_4, 1)
+        # global_context = F.adaptive_max_pool1d(fea_4, 1)
 
         l3_points = self.fp4(xyz_3, xyz_4, fea_3, fea_4)
         l2_points = self.fp3(xyz_2, xyz_3, fea_2, l3_points)
@@ -437,8 +436,8 @@ class get_model(nn.Module):
         cls_label_one_hot = cls_label.view(B, 16, 1).repeat(1, 1, N)
         extra_info = torch.cat([cls_label_one_hot, xyz.permute(0, 2, 1), points_0], 1)
         extra_info = self.info_encoder(extra_info)
-        global_context = self.global_encoder(global_context)
-        l0_points = self.fp1(xyz, xyz_1, torch.cat([extra_info,global_context.expand_as(extra_info) ], 1), l1_points)
+        # global_context = self.global_encoder(global_context)
+        l0_points = self.fp1(xyz, xyz_1, extra_info, l1_points)
 
         # FC layers
         feat = F.relu(self.bn0(self.conv0(l0_points)), inplace=True)

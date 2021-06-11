@@ -1,19 +1,18 @@
 """
-Based on PointsformerE
-Based on PointsformerE: change some configures, more channels in the upscaling.
+Based on PointsformerE2, change 3 to 8 in propgation
+Based on PointsformerE, change the configure of pre/pos_blocks
 Bsed on PointsformerB, add more layers and the global context
 Based on PointsformerA, changed GELU to RELU
 Model21+Pointnet part segment
 """
-
 """
-Instance 1
-Best accuracy is: 0.94448
-Best class avg mIOU is: 0.83053
-Best inctance avg mIOU is: 0.85671
-Epoch 100 BEST Accuracy: 0.945101  Class avg mIOU: 0.833679   Inctance avg mIOU: 0.859454
-"""
+Instance 2
+Best accuracy is: 0.94441
+Best class avg mIOU is: 0.82887
+Best inctance avg mIOU is: 0.85721
 
+Epoch 100 BEST Accuracy: 0.945145  Class avg mIOU: 0.835058   Inctance avg mIOU: 0.859883
+"""
 
 import torch
 import torch.nn as nn
@@ -352,12 +351,12 @@ class PointNetFeaturePropagation(nn.Module):
         else:
             dists = square_distance(xyz1, xyz2)
             dists, idx = dists.sort(dim=-1)
-            dists, idx = dists[:, :, :3], idx[:, :, :3]  # [B, N, 3]
+            dists, idx = dists[:, :, :8], idx[:, :, :8]  # [B, N, 8]
 
             dist_recip = 1.0 / (dists + 1e-8)
             norm = torch.sum(dist_recip, dim=2, keepdim=True)
             weight = dist_recip / norm
-            interpolated_points = torch.sum(index_points(points2, idx) * weight.view(B, N, 3, 1), dim=2)
+            interpolated_points = torch.sum(index_points(points2, idx) * weight.view(B, N, 8, 1), dim=2)
 
         if points1 is not None:
             points1 = points1.permute(0, 2, 1)
@@ -389,18 +388,18 @@ class get_model(nn.Module):
         )
 
         self.encoder_stage1 = encoder_stage(anchor_points=points//4, channel=128, reduce=False,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
         self.encoder_stage2 = encoder_stage(anchor_points=points//8, channel=256, reduce=True,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
         self.encoder_stage3 = encoder_stage(anchor_points=points // 16, channel=256, reduce=False,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
         self.encoder_stage4 = encoder_stage(anchor_points=points // 32, channel=512, reduce=True,
-                                            pre_blocks=2, pos_blocks=2, k_neighbor=32)
+                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
 
-        self.fp4 = PointNetFeaturePropagation(in_channel=(512+512), mlp=[512,512,512])
-        self.fp3 = PointNetFeaturePropagation(in_channel=512+256, mlp=[512, 512, 512])
-        self.fp2 = PointNetFeaturePropagation(in_channel=512 + 256, mlp=[512, 512])
-        self.fp1 = PointNetFeaturePropagation(in_channel=512+128+128, mlp=[512, 512])
+        self.fp4 = PointNetFeaturePropagation(in_channel=(512+512), mlp=[512,256,256])
+        self.fp3 = PointNetFeaturePropagation(in_channel=256+256, mlp=[512, 256, 256])
+        self.fp2 = PointNetFeaturePropagation(in_channel=256 + 256, mlp=[256, 256])
+        self.fp1 = PointNetFeaturePropagation(in_channel=256+128+128, mlp=[256, 256])
 
         self.info_encoder = nn.Sequential(
             FCBNReLU1D(16+3+input_channel, 128),
@@ -411,13 +410,13 @@ class get_model(nn.Module):
             FCBNReLU1D(256, 128),
         )
 
-        self.conv0 = nn.Conv1d(512, 512, 1)
-        self.bn0 = nn.BatchNorm1d(512)
+        self.conv0 = nn.Conv1d(256, 256, 1)
+        self.bn0 = nn.BatchNorm1d(256)
         self.drop0 = nn.Dropout(0.4)
-        self.conv1 = nn.Conv1d(512, 256, 1)
-        self.bn1 = nn.BatchNorm1d(256)
+        self.conv1 = nn.Conv1d(256, 128, 1)
+        self.bn1 = nn.BatchNorm1d(128)
         self.drop1 = nn.Dropout(0.4)
-        self.conv2 = nn.Conv1d(256, num_classes, 1)
+        self.conv2 = nn.Conv1d(128, num_classes, 1)
 
     def forward(self, x, cls_label):
         points_0 = x
