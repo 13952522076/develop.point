@@ -1,5 +1,5 @@
 """
-Based on PointsformerE2, change 3 to 8 in propgation
+Based on PointsformerE2, more FFN
 Based on PointsformerE, change the configure of pre/pos_blocks
 Bsed on PointsformerB, add more layers and the global context
 Based on PointsformerA, changed GELU to RELU
@@ -351,12 +351,12 @@ class PointNetFeaturePropagation(nn.Module):
         else:
             dists = square_distance(xyz1, xyz2)
             dists, idx = dists.sort(dim=-1)
-            dists, idx = dists[:, :, :8], idx[:, :, :8]  # [B, N, 8]
+            dists, idx = dists[:, :, :3], idx[:, :, :3]  # [B, N, 8]
 
             dist_recip = 1.0 / (dists + 1e-8)
             norm = torch.sum(dist_recip, dim=2, keepdim=True)
             weight = dist_recip / norm
-            interpolated_points = torch.sum(index_points(points2, idx) * weight.view(B, N, 8, 1), dim=2)
+            interpolated_points = torch.sum(index_points(points2, idx) * weight.view(B, N, 3, 1), dim=2)
 
         if points1 is not None:
             points1 = points1.permute(0, 2, 1)
@@ -388,13 +388,13 @@ class get_model(nn.Module):
         )
 
         self.encoder_stage1 = encoder_stage(anchor_points=points//4, channel=128, reduce=False,
-                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
+                                            pre_blocks=4, pos_blocks=4, k_neighbor=32)
         self.encoder_stage2 = encoder_stage(anchor_points=points//8, channel=256, reduce=True,
-                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
+                                            pre_blocks=4, pos_blocks=4, k_neighbor=32)
         self.encoder_stage3 = encoder_stage(anchor_points=points // 16, channel=256, reduce=False,
-                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
+                                            pre_blocks=4, pos_blocks=4, k_neighbor=32)
         self.encoder_stage4 = encoder_stage(anchor_points=points // 32, channel=512, reduce=True,
-                                            pre_blocks=3, pos_blocks=3, k_neighbor=32)
+                                            pre_blocks=4, pos_blocks=4, k_neighbor=32)
 
         self.fp4 = PointNetFeaturePropagation(in_channel=(512+512), mlp=[512,256,256])
         self.fp3 = PointNetFeaturePropagation(in_channel=256+256, mlp=[512, 256, 256])
