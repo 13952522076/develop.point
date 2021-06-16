@@ -87,6 +87,24 @@ if __name__ == '__main__':
     from torch.utils.data import DataLoader
     train_loader = DataLoader(ModelNet40(partition='train', num_points=1024), num_workers=4,
                               batch_size=32, shuffle=True, drop_last=True)
+    x_max, x_min, y_max, y_min, z_max, z_min = 0,0,0,0,0,0
+
     for batch_idx, (data, label) in enumerate(train_loader):
         print(f"batch_idx: {batch_idx}  | data shape: {data.shape} | ;lable shape: {label.shape}")
+        _x_max = max(data[:,:,0])
+        _x_min = min(data[:,:,0])
+
+        _y_max = max(data[:, :, 1])
+        _y_min = min(data[:, :, 1])
+
+        _z_max = max(data[:, :, 2])
+        _z_min = min(data[:, :, 2])
+        if _x_max > x_max: x_max = _x_max
+        if _y_max > y_max: y_max = _y_max
+        if _z_max > z_max: z_max = _z_max
+
+        if _x_min < x_min: x_min = _x_min
+        if _y_min < y_min: y_min = _y_min
+        if _z_min < z_min: z_min = _z_min
+        print(f"Batch {batch_idx}: x:{x_min}-{x_max} | y:{y_min}-{y_max} | z:{z_min}-{z_max}")
 
