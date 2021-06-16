@@ -302,15 +302,16 @@ class Model1(nn.Module):
         for _ in range(globals):
             self.global_blocks.append(TransformerBlock(dim=embed_dim, heads=heads, dim_head=dim_head, dropout=dropout))
 
+        cls_dropout = 0.5 if dropout==0. else 0.1
         self.classifier = nn.Sequential(
             nn.Linear(embed_dim, 512),
             nn.BatchNorm1d(512),
-            nn.GELU(),
-            nn.Dropout(0.5),
+            nn.ReLU(),
+            nn.Dropout(cls_dropout),
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
-            nn.GELU(),
-            nn.Dropout(0.5),
+            nn.ReLU(),
+            nn.Dropout(cls_dropout),
             nn.Linear(256, self.class_num)
         )
 
@@ -340,8 +341,28 @@ class Model1(nn.Module):
 
 
 def model1A(num_classes=40, **kwargs) -> Model1:
-    return Model1(points=1024, class_num=40, embed_dim=512, heads=8, dim_head=64,
+    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=8, dim_head=64,
                  sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0., **kwargs)
+
+def model1B(num_classes=40, **kwargs) -> Model1:
+    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=8, dim_head=64,
+                 sample=128, neighbors=32, locals=1, globals=1, radius=0.5, dropout=0., **kwargs)
+
+def model1C(num_classes=40, **kwargs) -> Model1:
+    return Model1(points=1024, class_num=num_classes, embed_dim=256, heads=8, dim_head=64,
+                 sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0., **kwargs)
+
+def model1D(num_classes=40, **kwargs) -> Model1:
+    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=4, dim_head=128,
+                 sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0., **kwargs)
+
+def model1E(num_classes=40, **kwargs) -> Model1:
+    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=8, dim_head=64,
+                 sample=128, neighbors=32, locals=3, globals=3, radius=0.4, dropout=0., **kwargs)
+
+
+
+
 
 
 if __name__ == '__main__':
