@@ -91,14 +91,14 @@ if __name__ == '__main__':
 
     for batch_idx, (data, label) in enumerate(train_loader):
         print(f"batch_idx: {batch_idx}  | data shape: {data.shape} | ;lable shape: {label.shape}")
-        _x_max = max(data[:,:,0])
-        _x_min = min(data[:,:,0])
+        _x_max = (data[:,:,0]).max()
+        _x_min = (data[:,:,0]).min()
 
-        _y_max = max(data[:, :, 1])
-        _y_min = min(data[:, :, 1])
+        _y_max = (data[:, :, 1]).max()
+        _y_min = (data[:, :, 1]).min()
 
-        _z_max = max(data[:, :, 2])
-        _z_min = min(data[:, :, 2])
+        _z_max = (data[:, :, 2]).max()
+        _z_min = (data[:, :, 2]).min()
         if _x_max > x_max: x_max = _x_max
         if _y_max > y_max: y_max = _y_max
         if _z_max > z_max: z_max = _z_max
