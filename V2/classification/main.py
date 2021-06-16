@@ -3,7 +3,7 @@ for training with resume functions.
 Usage:
 python main.py --model model22A --msg demo
 or
-nohup python main.py --model model22A --msg demo > nohup/model22A_demo.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model1B --msg demo > nohup/model1B_demo.out &
 """
 import argparse
 import os
