@@ -127,7 +127,7 @@ class LocalGrouper(nn.Module):
         xyz = xyz.contiguous()  # xyz [btach, points, xyz]
 
         # fps_idx = farthest_point_sample(xyz, self.samples).long()
-        fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.groups).long() # [B, npoint]
+        fps_idx = pointnet2_utils.furthest_point_sample(xyz, self.samples).long() # [B, npoint]
         new_xyz = index_points(xyz, fps_idx)
         new_points = index_points(points, fps_idx)
 
@@ -351,12 +351,12 @@ def model1C(num_classes=40, **kwargs) -> Model1:
                  sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0., **kwargs)
 
 def model1D(num_classes=40, **kwargs) -> Model1:
-    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=4, dim_head=128,
-                 sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0., **kwargs)
+    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=8, dim_head=64,
+                 sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0.1, **kwargs)
 
 def model1E(num_classes=40, **kwargs) -> Model1:
-    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=8, dim_head=64,
-                 sample=128, neighbors=32, locals=3, globals=3, radius=0.4, dropout=0., **kwargs)
+    return Model1(points=1024, class_num=num_classes, embed_dim=512, heads=16, dim_head=64,
+                 sample=128, neighbors=32, locals=3, globals=3, radius=0.5, dropout=0., **kwargs)
 
 
 
