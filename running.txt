@@ -1,0 +1,462 @@
+CUDA_VISIBLE_DEVICES=0 nohup python classification.py --use_normals --use_uniform_sample --model develop18Cmax --randseed 42 > nohup/develop18Cmax.out &
+
+CUDA_VISIBLE_DEVICES=1 nohup python classification.py --use_normals --use_uniform_sample --model develop19Bmax > nohup/develop19Bmax.out &
+
+
+
+nohup python classification.py --use_uniform_sample --model develop19Bmax > nohup/develop19Bmax.out &
+nohup python classification.py --use_normals --use_uniform_sample --model develop19Cmax > nohup/develop19Cmax.out &
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model combine12Amax > nohup/combine12Amax.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify.py --model combine1AmaxCUDA2 > nohup/combine1AmaxCUDA2.out &
+
+nohup python classify.py --model PCT > nohup/PCT_test4.out &
+
+
+
+model9A  model11E model11F model11G
+
+model10H  model10A
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python classification.py --use_normals --use_uniform_sample --model develop18Bmax --randseed 42 > nohup/develop18Bmax.out &
+
+
+
+
+nohup python classification.py --use_normals --use_uniform_sample --model PointNet2noDrop --randseed 42 > nohup/PointNet2noDrop.out &
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --use_normals --use_uniform_sample --model develop18Amax --learning_rate 0.01 > nohup_main/develop18Amax_use_normals.out &
+
+
+
+ CUDA_VISIBLE_DEVICES=0 nohup python main.py --exp_name=train --num_points=1024 --use_sgd=True --batch_size 32 --epochs 250 --lr 0.0001 > PCT_training.out &
+
+
+
+python main.py --exp_name=train --num_points=1024 --use_sgd=True --batch_size 32 --epochs 250 --lr 0.0001
+
+
+nohup python main_sgd.py --use_uniform_sample --model PCT > checkpoints_main_sgd/PCT.out &
+
+
+
+
+Fu老师，想问下这种情况怎么我该怎么回复呢？Shi老师可能想让我们每天专注于这块，我有点担心会不会影响NIPS投稿。
+
+
+Pipeline:
+Input: 
+--mode:  ordered selection,  one or many of [Deblocking, Denoising, CompressionArtifactRemoval，ScratchRemoval, FaceEnhancement, ImageQualityEnhance, SuperResolution]
+--SRtype: select one of [PSNR, perception, balanced]
+--SRscale: select one of [2,3,4]
+
+Output:
+generated image of each component (with order), a final output.
+
+
+
+conda install torch==0.3.1 torchvision==0.2.1 cuda80 -c pytorch
+
+
+python3 main.py --data_test Demo --scale 3 --pre_train download --test_only --save_results --test_image /home/xuma/PAIR/images/17.jpeg
+
+
+python3 test_pair.py -opt options/test/test_PAIR.json
+python3 test_pair.py -opt options/test/test_PAIR.json -save_folder ./test
+
+
+
+cd /workspace/xuma/PAIR
+python3 pair.py --modes FaceEnhancement --test_image ./FaceSR/smilelab.png
+
+
+python main.py --model RNAN --data_test Demo --noise_level 10 --save Test_RNAN --save_results --chop --test_only  --pre_train /workspace/xuma/modelzoo/RNAN/CAR/experiment/model/RNAN_CAR_Y_F64G10P48L2N10.pt --testpath ../experiment/LQ --testset Classic5
+https://shapenet.cs.stanford.edu/media/modelnet40_ply_hdf5_2048.zip
+
+
+
+CUDA_VISIBLE_DEVICES=1 python3 test.py --input /workspace/xuma/PAIR/LBAM/figs/results/GT/GT_001.png --mask /workspace/xuma/PAIR/LBAM/test_256x256.png --pretrain /workspace/xuma/modelzoo/LBAM/LBAM_NoBN_ParisStreetView.pth
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model11F --epoch 350 --seed 42 > nohup/model11F_350_seed42.out &
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model8A --epoch 350 --seed 1 > nohup/model8A_350_seed1.out &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model14E --epoch 350  > nohup/model14E_epoch350.out &
+
+CUDA_VISIBLE_DEVICES=1  python classify.py --model model14A
+
+model10A model10B
+
+CUDA_VISIBLE_DEVICES=1 nohup python classify2.py --model model18A2 --epoch 350 --checkpoint model18A2_350_1 > nohup/model18A2_350_1.out &
+CUDA_VISIBLE_DEVICES=2 nohup python classify2.py --model model18A3 --epoch 350 --checkpoint model18A3_350_1 > nohup/model18A3_350_1.out &
+CUDA_VISIBLE_DEVICES=4 nohup python classify2.py --model model18A1 --epoch 350 --checkpoint model18A1_350_1 > nohup/model18A1_350_1.out &
+CUDA_VISIBLE_DEVICES=5 nohup python classify2.py --model model18A2 --epoch 350 --checkpoint model18A2_350_2 > nohup/model18A2_350_2.out &
+CUDA_VISIBLE_DEVICES=7 nohup python classify2.py --model model18A3 --epoch 350 --checkpoint model18A3_350_2 > nohup/model18A3_350_2.out &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify2.py --model model18A1 --epoch 350 --checkpoint model18A1_350_2 > nohup/model18A1_350_2.out &
+CUDA_VISIBLE_DEVICES=3 nohup python classify2.py --model model18A2 --epoch 350 --checkpoint model18A2_350_3 > nohup/model18A2_350_3.out &
+CUDA_VISIBLE_DEVICES=6 nohup python classify2.py --model model18A3 --epoch 350 --checkpoint model18A3_350_3 > nohup/model18A3_350_3.out &
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10A_350_b64_1 > nohup/model10A_350_b64_1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10A_350_b64_2 > nohup/model10A_350_b64_2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10A_350_b64_3 > nohup/model10A_350_b64_3.out &
+CUDA_VISIBLE_DEVICES=3 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10A_350_b64_4 > nohup/model10A_350_b64_4.out &
+CUDA_VISIBLE_DEVICES=4 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10F_350_b64_5 > nohup/model10F_350_b64_5.out &
+CUDA_VISIBLE_DEVICES=5 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10F_350_b64_6 > nohup/model10F_350_b64_6.out &
+CUDA_VISIBLE_DEVICES=6 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10F_350_b64_7 > nohup/model10F_350_b64_7.out &
+CUDA_VISIBLE_DEVICES=7 nohup python classify2.py --model model10A --epoch 350 --checkpoint model10F_350_b64_8 > nohup/model10F_350_b64_8.out &
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model17A --epoch 350 > nohup/model17A_350_1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify.py --model model17A --epoch 350 > nohup/model17A_350_2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python classify.py --model model17F --epoch 350 > nohup/model17F_350_1.out &
+CUDA_VISIBLE_DEVICES=3 	
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify_new.py --model model9A > nohup/model9A_classify_new.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify_new.py --model model11D > nohup/model11D.out &
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python train.py --model model10 --normal --log_dir model10  > nohup/model10.out &
+CUDA_VISIBLE_DEVICES=1 nohup python train.py --model model10 --normal --log_dir model10 --batch_size 32 > nohup/model10_batch32.out &
+
+
+nohup python train.py --model model10A --normal --log_dir model10A  > nohup/model10A.out &
+
+nohup python train.py --model model10B --normal --log_dir model10B  > nohup/model10B.out &
+
+nohup python train.py --model model10C --normal --log_dir model10C  > nohup/model10C.out &
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify3_nodrop.py --model model10A --epoch 350 --checkpoint model10A_no_dropout_softmax > nohup/model10A_no_dropout_softmax.out &
+CUDA_VISIBLE_DEVICES=0 nohup python classify3_aug.py --model model10A --epoch 350 --checkpoint model10A_aug_scale_softmax --aug_scale > nohup/model10A_aug_scale_softmax.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify3_aug.py --model model10A --epoch 350 --checkpoint model10A_aug_rotate_softmax --aug_rotate > nohup/model10A_aug_rotate_softmax.out &
+CUDA_VISIBLE_DEVICES=3 nohup python classify3_aug.py --model model10A --epoch 350 --checkpoint model10A_aug_both_softmax2 --aug_rotate --aug_scale > nohup/model10A_aug_both_softmax2.out &
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --model model21H --msg Junetest1 > nohup/model21H_Junetest1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model21H --msg Junetest2 > nohup/model21H_Junetest2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python main.py --model model21H --msg Junetest3 > nohup/model21H_Junetest3.out &
+CUDA_VISIBLE_DEVICES=3 nohup python main.py --model model21H --msg Junetest4 > nohup/model21H_Junetest4.out &
+CUDA_VISIBLE_DEVICES=4 nohup python main.py --model model10I --msg Junetest5 > nohup/model10I_Junetest5.out &
+CUDA_VISIBLE_DEVICES=5 nohup python main.py --model model10I --msg Junetest6 > nohup/model10I_Junetest6.out &
+CUDA_VISIBLE_DEVICES=6 nohup python main.py --model model10I --msg Junetest7 > nohup/model10I_Junetest7.out &
+CUDA_VISIBLE_DEVICES=7 nohup python main.py --model model10I --msg Junetest8 > nohup/model10I_Junetest8.out &
+
+
+python classify.py --model model21H --msg try2
+
+
+salloc -N 1 --exclusive -p fugpu --gres=gpu:4 --time=20-15:00:00
+
+
+
+nohup python eval_voting.py --model model21H --msg seed6test6 > model21H_seed6test6_eval.out &
+
+
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model22H  --msg lr0.1_test1 --learning_rate 0.1 > nohup/model22A_lr0.1_test1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify.py --model model22H  --msg lr0.1_test2 --learning_rate 0.1 > nohup/model22A_lr0.1_test2.out &
+
+
+nohup python eval_voting.py --model model21H --msg seed6test6 > model21H_seed6test6_eval_2.out &
+
+CUDA_VISIBLE_DEVICES=0 nohup sh train_model23_try1.sh > nohup/train_model23_try1.log &
+CUDA_VISIBLE_DEVICES=1 nohup sh train_model23_try2.sh > nohup/train_model23_try2.log &
+
+CUDA_VISIBLE_DEVICES=0 nohup sh train_model23_try3.sh > nohup/train_model23_try3.log &
+CUDA_VISIBLE_DEVICES=1 nohup sh train_model23_try4.sh > nohup/train_model23_try4.log &
+
+
+
+
+nohup python classify.py --model model21H --msg vis6_2 > nohup/model21H_vis6.out &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model21B --msg try1 > nohup/model21B_try1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify.py --model model21B --msg try2 > nohup/model21B_try2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python classify.py --model model21B --msg try3 > nohup/model21B_try3.out &
+CUDA_VISIBLE_DEVICES=3 nohup python classify.py --model model21B --msg try4 > nohup/model21B_try4.out &
+CUDA_VISIBLE_DEVICES=4 nohup python classify.py --model model21A --msg try5 > nohup/model21A_try5.out &
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python classify.py --model model21H --msg test5 --batch_size 64 > nohup/model21H_test5_bs64_4gpu.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify.py --model model21H --msg test6 > nohup/model21H_test6.out &
+CUDA_VISIBLE_DEVICES=2 nohup python classify.py --model model21H --msg test7 > nohup/model21H_test7.out &
+CUDA_VISIBLE_DEVICES=3 nohup python classify.py --model model21H --msg test8 > nohup/model21H_test8.out &
+
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --model model23K --msg test1 > nohup/model23K_test1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python classify.py --model model21H --msg test14 > nohup/model21H_test14.out &
+
+
+
+CUDA_VISIBLE_DEVICES=0  nohup python main.py --model model21H --learning_rate 0.1 --seed 6 --msg lr0.1_June2_seed6_test1 > nohup/model21H_lr0.1_June2_seed6_test1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model21H --learning_rate 0.1 --seed 6 --msg lr0.1_June2_seed6_test2 > nohup/model21H_lr0.1_June2_seed6_test2.out &
+
+
+
+# instance-1
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --model model23E --msg test1 > nohup/model23E_test1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model23E --msg test2 > nohup/model23E_test2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python main.py --model model23E --msg test3 > nohup/model23E_test3.out &
+CUDA_VISIBLE_DEVICES=3 nohup python main.py --model model23E --msg test4 > nohup/model23E_test4.out &
+CUDA_VISIBLE_DEVICES=4 nohup python main.py --model model23E --msg test5 > nohup/model23E_test5.out &
+CUDA_VISIBLE_DEVICES=5 nohup python main.py --model model23E --msg test6 > nohup/model23E_test6.out &
+CUDA_VISIBLE_DEVICES=6 nohup python main.py --model model23E --msg test7 > nohup/model23E_test7.out &
+CUDA_VISIBLE_DEVICES=7 nohup python main.py --model model23E --msg test8 > nohup/model23E_test8.out &
+
+
+nohup python main.py --model model21H --batch_size 64 --weight_decay 1e-4 --exp_name test1 > nohup/model21H_test1.out &
+
+# part-seg
+CUDA_VISIBLE_DEVICES=0,1,2,3 nohup python main.py --model ModelA --exp_name test1 > nohup/ModelA_test1.out &
+
+# part_segment
+CUDA_VISIBLE_DEVICES=4,5,6,7 nohup python train.py --model model21BB --normal --log_dir model21BB > nohup/model21BB.out &
+
+
+
+CUDA_VISIBLE_DEVICES=0,1 nohup python main.py --model model24A --msg test1 > nohup/model24A_test1.out &
+CUDA_VISIBLE_DEVICES=2,3 nohup python main.py --model model24B --msg test1 > nohup/model24B_test1.out &
+CUDA_VISIBLE_DEVICES=4,5 nohup python main.py --model model24C --msg test1 > nohup/model24C_test1.out &
+CUDA_VISIBLE_DEVICES=6,7 nohup python main.py --model model24D --msg test1 > nohup/model24D_test1.out &
+
+
+CUDA_VISIBLE_DEVICES=0,1 nohup python main.py --model model24E --msg test1 > nohup/model24E_test1.out &
+CUDA_VISIBLE_DEVICES=2,3 nohup python main.py --model model24F --msg test1 > nohup/model24F_test1.out &
+CUDA_VISIBLE_DEVICES=4,5 nohup python main.py --model model24G --msg test1 > nohup/model24G_test1.out &
+CUDA_VISIBLE_DEVICES=6,7 nohup python main.py --model model24H --msg test1 > nohup/model24H_test1.out &
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --model model24A --msg test2 > nohup/model24A_test2.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model24B --msg test2 > nohup/model24B_test2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python main.py --model model24C --msg test2 > nohup/model24C_test2.out &
+CUDA_VISIBLE_DEVICES=3 nohup python main.py --model model24D --msg test2 > nohup/model24D_test2.out &
+CUDA_VISIBLE_DEVICES=4 nohup python main.py --model model24E --msg test2 > nohup/model24E_test2.out &
+CUDA_VISIBLE_DEVICES=5 nohup python main.py --model model24F --msg test2 > nohup/model24F_test2.out &
+CUDA_VISIBLE_DEVICES=6 nohup python main.py --model model24G --msg test2 > nohup/model24G_test2.out &
+CUDA_VISIBLE_DEVICES=7 nohup python main.py --model model24H --msg test2 > nohup/model24H_test2.out &
+
+
+
+CUDA_VISIBLE_DEVICES=0,1 nohup python train.py --model model21B --normal --log_dir model21B > nohup/model21B.out &
+CUDA_VISIBLE_DEVICES=2,3 nohup python train.py --model model21C --normal --log_dir model21C > nohup/model21C.out &
+CUDA_VISIBLE_DEVICES=4,5 nohup python train.py --model model21D --normal --log_dir model21D > nohup/model21D.out &
+CUDA_VISIBLE_DEVICES=6,7 nohup python train.py --model model21E --normal --log_dir model21E > nohup/model21E.out &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python train.py --model model21BB --normal --log_dir model21BB_1 > nohup/model21BB_1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python train.py --model model21BB --normal --log_dir model21BB_2 > nohup/model21BB_2.out &
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --model model21H --msg June7_1 > nohup/model21H_June7_1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model21H --msg June7_2 > nohup/model21H_June7_2.out &
+CUDA_VISIBLE_DEVICES=2 nohup python main.py --model model21H --msg June7_3 > nohup/model21H_June7_3.out &
+CUDA_VISIBLE_DEVICES=3 nohup python main.py --model model21H --msg June7_4 > nohup/model21H_June7_4.out &
+CUDA_VISIBLE_DEVICES=4 nohup python main.py --model model21H --msg June7_5 > nohup/model21H_June7_5.out &
+CUDA_VISIBLE_DEVICES=5 nohup python main.py --model model21H --msg June7_6 > nohup/model21H_June7_6.out &
+CUDA_VISIBLE_DEVICES=6 nohup python main.py --model model21H --msg June7_7 > nohup/model21H_June7_7.out &
+CUDA_VISIBLE_DEVICES=7 nohup python main.py --model model21H --msg June7_8 > nohup/model21H_June7_8.out &
+
+
+# plot attention
+python3 plot_relation.py --id 1938 --point_id 10 --stage 0 --head_id 0 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 0 --head_id 1 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 0 --head_id 2 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 0 --head_id 3 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 1 --head_id 0 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 1 --head_id 1 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 1 --head_id 2 --save 
+python3 plot_relation.py --id 1938 --point_id 10 --stage 1 --head_id 3 --save 
+
+
+
+python3 plot_relation2.py --id 26 --point_id 1 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 2 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 3 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 4 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 5 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 6 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 7 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 8 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 9 --stage 0 --save
+python3 plot_relation2.py --id 26 --point_id 0 --stage 0 --save
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python eval_voting.py --model model21H --msg seed6test6_bak2 > nohup/eval_model21H_seed6test6_bak2.out &
+
+nohup python eval_voting.py --model model21H --msg seed6test6_bak3 --seed 0 > nohup/eval_model21H_seed6test6_bak3.out &
+nohup python eval_voting.py --model model21H --msg seed6test6_bak4 --seed 6 > nohup/eval_model21H_seed6test6_bak4.out &
+nohup python eval_voting.py --model model21H --msg seed6test6_bak5 --seed 42 > nohup/eval_model21H_seed6test6_bak5.out &
+
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python train.py --model pointsformerA --normal --optimizer SGD --log_dir pointsformerA_SGD_withnormal_test1 > nohup/pointsformerA_SGD_withnormal_test1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python train.py --model pointsformerB --normal --log_dir pointsformerB_withnormal_test1 > nohup/pointsformerB_withnormal_test1.out &
+nohup python train.py --model pointsformerC --normal --log_dir pointsformerC_withnormal_test1 > nohup/pointsformerC_withnormal_test1.out &
+nohup python train.py --model pointsformerD --normal --log_dir pointsformerD_withnormal_test1 > nohup/pointsformerD_withnormal_test1.out &
+nohup python train.py --model pointsformerD --log_dir pointsformerD_nonormal_test1 > nohup/pointsformerD_nonormal_test1.out &
+
+
+
+
+
+
+
+CUDA_VISIBLE_DEVICES=0,1 nohup python train.py --model pointsformerF --normal --log_dir pointsformerF_normal_test1 > nohup/pointsformerF_normal_test1.out &
+CUDA_VISIBLE_DEVICES=2,3 nohup python train.py --model pointsformerE --log_dir pointsformerE_test1 > nohup/pointsformerE_test1.out &
+CUDA_VISIBLE_DEVICES=4,5 nohup python train.py --model pointsformerE --normal --optimizer SGD --log_dir pointsformerE_sgd_test1 > nohup/pointsformerE_sgd_test1.out &
+CUDA_VISIBLE_DEVICES=6,7 nohup python train.py --model pointsformerE --learning_rate 0.003 --log_dir pointsformerE_lr003_test1 > nohup/pointsformerE_lr003_test1.out &
+
+nohup python train.py --model pointsformerF --normal --log_dir pointsformerG_normal_test1 > nohup/pointsformerG_normal_test1.out &
+
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --model model21H --msg June7_seed32_1 > nohup/model21H_June7_seed32_1.out &
+CUDA_VISIBLE_DEVICES=1 nohup python main.py --model model21H --msg June7_seed32_2 > nohup/model21H_June7_seed32_2.out &
+
+
+https://doc-0o-4k-docs.googleusercontent.com/docs/securesc/mcbhs1teqmle1g2950vsc0psclmahk1a/4pnba5k66g6db4s25a3sogmfrlj4m576/1623132900000/15543419006824780045/03879384661460040859/1KUxWagmEWnvMhEb4FRwq2Mj0aa3U3xUf?e=download&authuser=0&nonce=bele2naakapss&user=03879384661460040859&hash=ocm29sg0o32e65q271plg0hh4o4m7pl0
+
+
+CUDA_VISIBLE_DEVICES=0 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhanceJune9_1.log &
+CUDA_VISIBLE_DEVICES=1 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhanceJune9_2.log &
+CUDA_VISIBLE_DEVICES=2 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhance2.log &
+CUDA_VISIBLE_DEVICES=3 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhance3.log &
+CUDA_VISIBLE_DEVICES=4 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhance4.log &
+CUDA_VISIBLE_DEVICES=5 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhance5.log &
+CUDA_VISIBLE_DEVICES=6 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhance6.log &
+CUDA_VISIBLE_DEVICES=7 nohup sh eval_voting_enhance.sh > nohup/eval_voting_enhance7.log &
+
+
+
+nohup python train.py --model pointsformerE --normal --log_dir pointsformerE_Last1 > nohup/pointsformerE_Last1.out &    # instance 1 0.85576
+nohup python train.py --model pointsformerE --log_dir pointsformerE_Last2 --batch_size 64 > nohup/pointsformerE_Last2.out &   # instance 2  pointsformerE_Last2.out
+nohup python train.py --model pointsformerE --log_dir --normal pointsformerE_Last2 --batch_size 64 > nohup/pointsformerE_Last3.out &    
+
+nohup python train.py --model pointsformerF --normal --log_dir pointsformerF_Last1 > nohup/pointsformerF_Last1.out &  # instance 3 0.85306
+nohup python train.py --model pointsformerG --normal --log_dir pointsformerG_Last1 --batch_size 64 > nohup/pointsformerG_Last1.out &  # instance 4 0.85275
+
+nohup python train.py --model pointsformerG --normal --log_dir pointsformerG_Last1 --batch_size 32 > nohup/pointsformerG_Last2.out &  # instance 4  0.85272
+
+# evaluate
+nohup python test_voting.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 > nohup/vote_pointsformerE_normal_test1.log &
+nohup python test_voting.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --NUM_VOTE 10 --epoch 300> nohup/vote_pointsformerE_normal_test300.log &
+
+
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1
+
+
+
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --id 16 --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save --goon
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+python plot_results.py --model pointsformerE --normal --log_dir pointsformerE_normal_test1 --save
+
+
+
+
+
+nohup python train.py --model pointsformerE1 --normal --log_dir pointsformerE1 --batch_size 64 > nohup/pointsformerE1.out &    # instance1 
+nohup python train.py --model pointsformerE2 --normal --log_dir pointsformerE2 --batch_size 64 > nohup/pointsformerE2.out &    # instance2 
+nohup python train.py --model pointsformerE3 --normal --log_dir pointsformerE3 --batch_size 64 > nohup/pointsformerE3.out &    # instance3 
+nohup python train.py --model pointsformerE4 --normal --log_dir pointsformerE4 --batch_size 64 > nohup/pointsformerE4.out &    # instance4 
+
+
+nohup python test_voting.py --model pointsformerE1 --normal --log_dir pointsformerE1 --batch_size 64 > nohup/vote_pointsformerE1.log &
+nohup python test_voting.py --model pointsformerE2 --normal --log_dir pointsformerE2 --batch_size 64 > nohup/vote_pointsformerE2.log &
+nohup python test_voting.py --model pointsformerE3 --normal --log_dir pointsformerE3 --batch_size 64 > nohup/vote_pointsformerE3.log &
+nohup python test_voting.py --model pointsformerE4 --normal --log_dir pointsformerE4 --batch_size 64 > nohup/vote_pointsformerE4.log &
